@@ -66,7 +66,7 @@ export function generateCubeLUT() {
 }
 
 // Apply basic mode adjustments to a single color point
-function applyBasicLutAdjustments(r, g, b) {
+export function applyBasicLutAdjustments(r, g, b) {
   const params = appState.currentLutParams.basic || {};
   
   // Apply contrast
@@ -101,7 +101,7 @@ function applyBasicLutAdjustments(r, g, b) {
 }
 
 // Apply advanced mode adjustments to a single color point
-function applyAdvancedLutAdjustments(r, g, b) {
+export function applyAdvancedLutAdjustments(r, g, b) {
   const params = appState.currentLutParams;
   
   // 1. Apply temperature and tint
@@ -219,7 +219,7 @@ function applyAdvancedLutAdjustments(r, g, b) {
 }
 
 // Apply temperature and tint adjustments
-function applyTemperatureAndTint(r, g, b, temperature, tint) {
+export function applyTemperatureAndTint(r, g, b, temperature, tint) {
   // Temperature: blue-yellow shift
   // Positive = cooler (more blue), Negative = warmer (more yellow)
   const tempFactor = temperature;
@@ -258,7 +258,7 @@ function applyTemperatureAndTint(r, g, b, temperature, tint) {
 }
 
 // Apply tone adjustments (highlights, shadows, whites, blacks)
-function applyToneAdjustments(r, g, b, highlights, shadows, whites, blacks) {
+export function applyToneAdjustments(r, g, b, highlights, shadows, whites, blacks) {
   // Calculate luminance
   const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
   
@@ -284,11 +284,3 @@ function applyToneAdjustments(r, g, b, highlights, shadows, whites, blacks) {
   
   return { r, g, b };
 }
-
-// Export helper functions for use in other modules
-export {
-  applyBasicLutAdjustments,
-  applyAdvancedLutAdjustments,
-  applyTemperatureAndTint,
-  applyToneAdjustments
-};

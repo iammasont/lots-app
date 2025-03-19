@@ -38,7 +38,7 @@ export async function openImageFile() {
 }
 
 // Fallback file upload function using HTML input for browser context
-function fallbackFileUpload() {
+export function fallbackFileUpload() {
   return new Promise((resolve) => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -147,7 +147,7 @@ export async function loadLutFile() {
 }
 
 // Fallback LUT upload function using HTML input for browser context
-function fallbackLutUpload() {
+export function fallbackLutUpload() {
   return new Promise((resolve) => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -180,9 +180,3 @@ function fallbackLutUpload() {
     input.click();
   });
 }
-
-// Export additional utility functions
-export {
-  fallbackFileUpload,
-  fallbackLutUpload
-};

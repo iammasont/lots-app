@@ -28,7 +28,7 @@ function setupExportButtons() {
 }
 
 // Handle the LUT export button click
-async function handleExportLut() {
+export async function handleExportLut() {
   console.log('Exporting LUT');
   
   try {
@@ -53,7 +53,7 @@ async function handleExportLut() {
 }
 
 // Format a filename from the LUT title
-function formatFilename(title) {
+export function formatFilename(title) {
   if (!title) return 'lut.cube';
   
   // Replace spaces with underscores and remove special characters
@@ -115,7 +115,7 @@ export async function exportProcessedImage() {
 }
 
 // Export all settings as a preset file
-export async function exportPreset() {
+export function exportPreset() {
   console.log('Exporting preset');
   
   try {
@@ -139,15 +139,16 @@ export async function exportPreset() {
     
     // Save the file using Electron or browser download
     if (window.electronAPI && typeof window.electronAPI.savePreset === 'function') {
-      const filePath = await window.electronAPI.savePreset({
+      return window.electronAPI.savePreset({
         content: presetJson,
         defaultPath: defaultFilename
+      }).then(filePath => {
+        if (filePath) {
+          showToast(`Preset saved to: ${filePath}`, 'success');
+          return filePath;
+        }
+        return null;
       });
-      
-      if (filePath) {
-        showToast(`Preset saved to: ${filePath}`, 'success');
-        return filePath;
-      }
     } else {
       // Browser environment - offer download
       const blob = new Blob([presetJson], { type: 'application/json' });
@@ -161,17 +162,11 @@ export async function exportPreset() {
       URL.revokeObjectURL(url);
       
       showToast(`Preset downloaded as ${defaultFilename}`, 'success');
-      return defaultFilename;
+      return Promise.resolve(defaultFilename);
     }
   } catch (error) {
     console.error('Error exporting preset:', error);
     showToast('Failed to export preset', 'error');
-    return null;
+    return Promise.resolve(null);
   }
 }
-
-// Export additional functions for use in other modules
-export {
-  formatFilename,
-  handleExportLut
-};

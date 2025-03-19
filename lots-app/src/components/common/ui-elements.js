@@ -64,7 +64,7 @@ function initModals() {
 }
 
 // Update LUT preview in code modal
-function updateLUTPreview(fullPreview = false) {
+export function updateLUTPreview(fullPreview = false) {
   const lutPreview = document.getElementById('lut-preview');
   if (!lutPreview) return;
   
@@ -234,8 +234,3 @@ export function showConfirmDialog(message, onConfirm, onCancel) {
   
   return dialogOverlay;
 }
-
-// Export utility functions
-export {
-  updateLUTPreview
-};

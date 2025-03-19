@@ -3,7 +3,7 @@
 import { appState, applyImageAdjustments } from '../../app.js';
 
 // Default curve parameters
-const defaultCurveParams = {
+export const defaultCurveParams = {
   rgb: [
     { x: 0, y: 0 },      // Shadow point
     { x: 0.25, y: 0.25 }, // Quarter tone
@@ -36,7 +36,7 @@ const defaultCurveParams = {
 };
 
 // Check if a curve is linear (no adjustments)
-function isLinearCurve(points) {
+export function isLinearCurve(points) {
   for (let i = 0; i < points.length; i++) {
     const expectedY = points[i].x;
     if (Math.abs(points[i].y - expectedY) > 0.01) {
@@ -47,7 +47,7 @@ function isLinearCurve(points) {
 }
 
 // Interpolate a value through a curve
-function interpolateCurve(points, value) {
+export function interpolateCurve(points, value) {
   // Handle edge cases
   if (value <= 0) return points[0].y;
   if (value >= 1) return points[points.length - 1].y;
@@ -441,10 +441,3 @@ export function applyCurvesToImage(imageData) {
   }
   return imageData;
 }
-
-// Export functions and constants
-export {
-  isLinearCurve,
-  interpolateCurve,
-  defaultCurveParams
-};
