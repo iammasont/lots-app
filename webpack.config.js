@@ -3,61 +3,44 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
-  mode: process.env.NODE_ENV || 'development',
-  entry: './src/app.js',  // Assuming src is inside the lots-app dir where webpack runs
+  mode: 'development',
+  entry: './lots-app/src/app.js',
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, 'public')
+    path: path.resolve(__dirname, 'lots-app/public'),
+  },
+  resolve: {
+    extensions: ['.js', '.jsx', '.json', '.css'],
+    modules: [path.resolve(__dirname, 'node_modules'), 'node_modules'],
   },
   module: {
     rules: [
-      // JavaScript
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: ['@babel/preset-env']
-          }
-        }
-      },
-      // CSS
       {
         test: /\.css$/,
         use: [
           MiniCssExtractPlugin.loader,
-          'css-loader'
-        ]
+          'css-loader',
+        ],
       },
-      // Images
       {
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
         type: 'asset/resource',
       },
-      // Fonts
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/i,
         type: 'asset/resource',
-      }
-    ]
+      },
+    ],
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, 'public/index.html'),
-      filename: 'index.html'
+      template: path.resolve(__dirname, 'lots-app/src/index.html'),
+      filename: 'index.html',
+      inject: true,
     }),
     new MiniCssExtractPlugin({
-      filename: 'styles.css'
-    })
+      filename: 'styles.css',
+    }),
   ],
-  resolve: {
-    extensions: ['.js', '.json', '.css']
-  },
-  // Don't minimize for development
-  optimization: {
-    minimize: process.env.NODE_ENV === 'production'
-  },
-  // Enable source maps for debugging
-  devtool: process.env.NODE_ENV === 'production' ? false : 'eval-source-map'
+  devtool: 'eval-source-map',
 };

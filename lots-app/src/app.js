@@ -2,7 +2,7 @@
 import './styles/base.css';
 import './styles/layout.css';
 import './styles/components.css';
-import './styles/comparison.css';  // This was the missing import
+import './styles/comparison.css';
 import './styles/tools.css';
 import './styles/themes.css';
 import './styles/animations.css';
