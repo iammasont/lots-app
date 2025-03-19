@@ -33,15 +33,16 @@ export function initBasicCorrections() {
   // Set up basic mode controls
   setupBasicControls();
   
-  // Set up advanced mode controls
-  setupAdvancedControls();
-  
   // Initialize LUT title and size controls
   initTitleAndSizeControls();
+  
+  console.log('Basic Corrections initialized successfully');
 }
 
 // Set up basic mode slider controls
 function setupBasicControls() {
+  console.log('Setting up basic controls');
+  
   // Get slider references
   const contrastSlider = document.getElementById('contrast');
   const saturationSlider = document.getElementById('saturation');
@@ -56,23 +57,39 @@ function setupBasicControls() {
   const greenBalanceValue = document.getElementById('green-balance-value');
   const blueBalanceValue = document.getElementById('blue-balance-value');
   
+  // Report missing elements
+  if (!contrastSlider) console.warn('Contrast slider not found');
+  if (!saturationSlider) console.warn('Saturation slider not found');
+  if (!redBalanceSlider) console.warn('Red balance slider not found');
+  if (!greenBalanceSlider) console.warn('Green balance slider not found');
+  if (!blueBalanceSlider) console.warn('Blue balance slider not found');
+  
   // Set up event listeners for sliders
   setupSlider(contrastSlider, contrastValue, 'contrast');
   setupSlider(saturationSlider, saturationValue, 'saturation');
   setupSlider(redBalanceSlider, redBalanceValue, 'redBalance');
   setupSlider(greenBalanceSlider, greenBalanceValue, 'greenBalance');
   setupSlider(blueBalanceSlider, blueBalanceValue, 'blueBalance');
+  
+  console.log('Basic controls setup complete');
 }
 
 // Set up advanced mode controls
-function setupAdvancedControls() {
-  const basicCorrectionSection = document.getElementById('basic-correction-section');
-  if (!basicCorrectionSection) return;
+export function setupAdvancedControls() {
+  console.log('Setting up advanced mode controls...');
   
+  const basicCorrectionSection = document.getElementById('basic-correction-section');
+  if (!basicCorrectionSection) {
+    console.error('Basic correction section element not found in DOM!');
+    return;
+  }
+  
+  console.log('Clearing existing content in basic correction section');
   // Clear any existing content
   basicCorrectionSection.innerHTML = '';
   
   // Create advanced basic correction controls
+  console.log('Creating advanced sliders...');
   
   // Create exposure control
   createAdvancedSlider(basicCorrectionSection, {
@@ -162,19 +179,26 @@ function setupAdvancedControls() {
     paramName: 'tint'
   });
   
+  console.log('Adding reset button');
   // Add reset button
   const resetButton = document.createElement('button');
   resetButton.textContent = 'Reset';
   resetButton.className = 'reset-btn';
   resetButton.addEventListener('click', resetAdvancedControls);
   basicCorrectionSection.appendChild(resetButton);
+  
+  console.log('Advanced controls setup complete');
 }
 
 // Helper function to create advanced slider controls
 function createAdvancedSlider(container, options) {
-  if (!container) return;
+  if (!container) {
+    console.error('Cannot create slider: container is null');
+    return;
+  }
   
   const { id, label, min, max, step, initialValue, paramName } = options;
+  console.log(`Creating advanced slider: ${id} for ${paramName}`);
   
   // Create container for the slider
   const sliderContainer = document.createElement('div');
@@ -221,6 +245,8 @@ function createAdvancedSlider(container, options) {
     // Update display value
     valueDisplay.textContent = parseFloat(slider.value).toFixed(1);
     
+    console.log(`Advanced parameter updated: ${paramName} = ${slider.value}`);
+    
     // Apply changes to image
     applyImageAdjustments();
   });
@@ -230,6 +256,8 @@ function createAdvancedSlider(container, options) {
 
 // Reset all advanced controls to their default values
 function resetAdvancedControls() {
+  console.log('Resetting advanced controls to defaults');
+  
   // Reset all lumetri parameters to default values
   appState.currentLutParams.lumetri = {
     exposure: 0,
@@ -261,7 +289,10 @@ function resetAdvancedControls() {
 
 // Set up a slider control with its value display for basic mode
 function setupSlider(slider, valueDisplay, paramName) {
-  if (!slider || !valueDisplay) return;
+  if (!slider || !valueDisplay) {
+    console.warn(`Cannot set up slider: ${paramName} - missing elements`);
+    return;
+  }
   
   // Set initial value from app state
   slider.value = appState.currentLutParams.basic[paramName];
@@ -275,6 +306,8 @@ function setupSlider(slider, valueDisplay, paramName) {
     // Update display value
     valueDisplay.textContent = appState.currentLutParams.basic[paramName].toFixed(2);
     
+    console.log(`Basic parameter updated: ${paramName} = ${slider.value}`);
+    
     // Apply adjustments to image
     applyImageAdjustments();
   });
@@ -282,8 +315,13 @@ function setupSlider(slider, valueDisplay, paramName) {
 
 // Initialize title and LUT size controls
 function initTitleAndSizeControls() {
+  console.log('Initializing title and LUT size controls');
+  
   const titleInput = document.getElementById('title');
   const lutSizeSelect = document.getElementById('lut-size');
+  
+  if (!titleInput) console.warn('Title input not found');
+  if (!lutSizeSelect) console.warn('LUT size select not found');
   
   if (titleInput) {
     // Set initial value

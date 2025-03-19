@@ -89,32 +89,60 @@ function initApp() {
 
 // Set up mode toggle (basic/advanced)
 function setupModeToggle() {
+  console.log('Setting up mode toggle...');
   const modeToggle = document.getElementById('mode-toggle');
   const basicControls = document.getElementById('basic-controls');
   const advancedControls = document.getElementById('advanced-controls');
   
-  if (modeToggle) {
-    modeToggle.addEventListener('change', function() {
-      const isAdvancedMode = this.checked;
-      appState.activeMode = isAdvancedMode ? 'advanced' : 'basic';
-      
-      if (basicControls && advancedControls) {
-        console.log(`Switching to ${appState.activeMode} mode`);
-        basicControls.style.display = isAdvancedMode ? 'none' : 'block';
-        advancedControls.style.display = isAdvancedMode ? 'block' : 'none';
-        
-        // When switching to advanced mode, ensure all advanced sections are properly initialized
-        if (isAdvancedMode && typeof setupAdvancedControls === 'function') {
-          setupAdvancedControls();
-        }
-        
-        // Apply current image adjustments with the new mode
-        if (appState.originalImage && appState.processedImage) {
-          applyImageAdjustments();
-        }
-      }
-    });
+  if (!modeToggle) {
+    console.error('Mode toggle element not found!');
+    return;
   }
+  
+  if (!basicControls) {
+    console.error('Basic controls element not found!');
+    return;
+  }
+  
+  if (!advancedControls) {
+    console.error('Advanced controls element not found!');
+    return;
+  }
+  
+  console.log('Mode toggle elements found, adding event listener...');
+  
+  modeToggle.addEventListener('change', function() {
+    const isAdvancedMode = this.checked;
+    console.log(`Mode toggle changed. Advanced mode: ${isAdvancedMode}`);
+    
+    appState.activeMode = isAdvancedMode ? 'advanced' : 'basic';
+    
+    console.log(`Switching to ${appState.activeMode} mode`);
+    console.log(`Basic controls display: ${isAdvancedMode ? 'none' : 'block'}`);
+    console.log(`Advanced controls display: ${isAdvancedMode ? 'block' : 'none'}`);
+    
+    basicControls.style.display = isAdvancedMode ? 'none' : 'block';
+    advancedControls.style.display = isAdvancedMode ? 'block' : 'none';
+    
+    // When switching to advanced mode, ensure all advanced sections are properly initialized
+    if (isAdvancedMode && typeof setupAdvancedControls === 'function') {
+      try {
+        console.log('Setting up advanced controls...');
+        setupAdvancedControls();
+        console.log('Advanced controls setup complete');
+      } catch (error) {
+        console.error('Error setting up advanced controls:', error);
+      }
+    }
+    
+    // Apply current image adjustments with the new mode
+    if (appState.originalImage && appState.processedImage) {
+      console.log('Applying image adjustments after mode switch');
+      applyImageAdjustments();
+    }
+  });
+  
+  console.log('Mode toggle setup completed');
 }
 
 // Set up window control buttons for Electron
@@ -150,9 +178,12 @@ function setupWindowControls() {
 
 // Apply adjustments to image based on current mode and parameters
 function applyImageAdjustments() {
-  if (!appState.originalImage) return;
+  if (!appState.originalImage) {
+    console.warn('No original image to process');
+    return;
+  }
   
-  console.log('Applying image adjustments');
+  console.log(`Applying image adjustments in ${appState.activeMode} mode`);
   
   // Actually process the image instead of just logging
   try {
@@ -162,6 +193,9 @@ function applyImageAdjustments() {
     // Update the processed image with the new data
     if (processedImageUrl && appState.processedImageElement) {
       appState.processedImageElement.src = processedImageUrl;
+      console.log('Processed image updated');
+    } else {
+      console.warn('Failed to update processed image');
     }
   } catch (error) {
     console.error('Error processing image:', error);

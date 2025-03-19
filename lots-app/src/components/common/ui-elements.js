@@ -14,15 +14,23 @@ export function initUiElements() {
   
   // Initialize window control buttons
   initWindowControls();
+  
+  console.log('UI Elements initialization complete');
 }
 
 // Initialize modal dialogs
 function initModals() {
+  console.log('Setting up modal dialogs');
   // Code Preview Modal
   const viewCodeBtn = document.getElementById('view-code-btn');
   const viewCodeBtnAdvanced = document.getElementById('view-code-btn-advanced');
   const codeModal = document.getElementById('code-modal');
   const closeModalBtn = document.getElementById('close-modal-btn');
+  
+  if (!viewCodeBtn) console.warn('View code button not found');
+  if (!viewCodeBtnAdvanced) console.warn('Advanced view code button not found');
+  if (!codeModal) console.warn('Code modal not found');
+  if (!closeModalBtn) console.warn('Close modal button not found');
   
   if (viewCodeBtn && codeModal) {
     viewCodeBtn.addEventListener('click', () => {
@@ -66,7 +74,10 @@ function initModals() {
 // Update LUT preview in code modal
 export function updateLUTPreview(fullPreview = false) {
   const lutPreview = document.getElementById('lut-preview');
-  if (!lutPreview) return;
+  if (!lutPreview) {
+    console.warn('LUT preview element not found');
+    return;
+  }
   
   // Get LUT content from generator (to be implemented)
   let lutContent = "# LUT Preview will be generated here";
@@ -85,8 +96,13 @@ export function updateLUTPreview(fullPreview = false) {
   }
 }
 
+
+
+
 // Initialize expandable sections
 function initExpandableSections() {
+  console.log('Initializing expandable sections');
+  
   // Define sections to initialize as expanded or collapsed
   const sections = [
     { toggle: 'basic-correction-toggle', content: 'basic-correction-section', expanded: true },
@@ -99,20 +115,55 @@ function initExpandableSections() {
     const toggle = document.getElementById(section.toggle);
     const content = document.getElementById(section.content);
     
-    if (toggle && content) {
-      // Set initial state
-      if (section.expanded) {
+    if (!toggle) {
+      console.error(`Toggle element not found: #${section.toggle}`);
+      return;
+    }
+    
+    if (!content) {
+      console.error(`Content element not found: #${section.content}`);
+      return;
+    }
+    
+    console.log(`Setting up section: ${section.toggle} (expanded: ${section.expanded})`);
+    
+    // Set initial state
+    if (section.expanded) {
+      toggle.classList.add('expanded');
+      content.classList.add('expanded');
+      content.style.maxHeight = '1000px';
+    } else {
+      toggle.classList.remove('expanded');
+      content.classList.remove('expanded');
+      content.style.maxHeight = '0px';
+    }
+    
+    // Add click event listener
+    toggle.addEventListener('click', () => {
+      console.log(`Toggle clicked for: ${section.toggle}`);
+      
+      // Check if already expanded by looking directly at the content's current state
+      const isCurrentlyExpanded = content.style.maxHeight !== '0px';
+      
+      if (isCurrentlyExpanded) {
+        // Currently expanded, collapse it
+        toggle.classList.remove('expanded');
+        content.classList.remove('expanded');
+        content.style.maxHeight = '0px';
+        console.log(`Collapsing section: ${section.content}`);
+      } else {
+        // Currently collapsed, expand it
         toggle.classList.add('expanded');
         content.classList.add('expanded');
+        content.style.maxHeight = '1000px';
+        console.log(`Expanding section: ${section.content}`);
       }
-      
-      toggle.addEventListener('click', () => {
-        toggle.classList.toggle('expanded');
-        content.classList.toggle('expanded');
-      });
-    }
+    });
   });
 }
+
+
+
 
 // Initialize window control buttons for Electron
 function initWindowControls() {
@@ -147,6 +198,8 @@ function initWindowControls() {
 
 // Create a simple toast notification
 export function showToast(message, type = 'info', duration = 3000) {
+  console.log(`Toast notification: ${message} (${type})`);
+  
   // Create toast container if it doesn't exist
   let toastContainer = document.querySelector('.toast-container');
   if (!toastContainer) {
@@ -234,7 +287,3 @@ export function showConfirmDialog(message, onConfirm, onCancel) {
   
   return dialogOverlay;
 }
-
-
-
-
