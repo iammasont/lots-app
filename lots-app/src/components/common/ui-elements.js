@@ -234,3 +234,20 @@ export function showConfirmDialog(message, onConfirm, onCancel) {
   
   return dialogOverlay;
 }
+
+
+
+
+
+export function initUiElements() {
+  console.log('🚨 INITIALIZING UI ELEMENTS - ARE WE HERE? 🚨');
+  
+  // Initialize modal functionality
+  initModals();
+  
+  // Initialize expandable sections
+  initExpandableSections();
+  
+  // Initialize window control buttons
+  initWindowControls();
+}
