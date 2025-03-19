@@ -1,0 +1,967 @@
+/*!***********************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./lots-app/src/styles/compare.css ***!
+  \***********************************************************************************/
+/* Custom image comparison component with correct masking */
+.comparison-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .comparison-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  
+  /* The processed image is the base layer covering the entire container */
+  .processed-image-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+  
+  /* The original image is positioned on top, but clipped */
+  .original-image-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    /* Clip only shows left side of the original image */
+    clip-path: inset(0 50% 0 0);
+    border-right: none; /* Remove the right border since we have a divider now */
+  }
+  
+  /* Both images fill their containers */
+  .processed-image-container img,
+  .original-image-container img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  
+  /* Vertical divider line */
+  .vertical-divider {
+    position: absolute;
+    top: 0;
+    left: 50%; /* Default position */
+    width: 2px;
+    height: 100%;
+    background-color: white;
+    z-index: 3;
+    pointer-events: none; /* So it doesn't interfere with slider interaction */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Add shadow for better visibility */
+  }
+  
+  /* The slider controls the dividing line position */
+  .comparison-slider {
+    position: absolute;
+    top: 0;
+    left: 50%; /* Default position */
+    width: 2px;
+    height: 100%;
+    z-index: 3;
+    cursor: ew-resize;
+  }
+  
+  .slider-handle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    background-color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    cursor: ew-resize;
+    z-index: 5; /* Increased z-index to appear above the divider */
+  }
+  
+  .slider-handle::after {
+    content: '↔';
+    font-size: 16px;
+    color: #111;
+  }
+  
+  .image-label {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 600;
+    pointer-events: none;
+    top: 15px;
+    z-index: 5;
+  }
+  
+  .before-label {
+    left: 15px;
+  }
+  
+  .after-label {
+    right: 15px;
+  }
+  
+  /* Toggle view controls */
+  .toggle-view {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 20px;
+    padding: 4px;
+    display: flex;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+  }
+  
+  .toggle-view button {
+    background: transparent;
+    border: none;
+    color: #999;
+    font-size: 11px;
+    margin: 0;
+    padding: 4px 12px;
+    border-radius: 16px;
+  }
+  
+  .toggle-view button.active {
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #111;
+  }
+/*!********************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./lots-app/src/styles/base.css ***!
+  \********************************************************************************/
+/* Reset and base styles */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #111111;
+  color: #f5f5f5;
+}
+
+body {
+  font-weight: 300;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Prevent text selection */
+body, html, * {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  cursor: default;
+}
+
+/* Only allow text selection in specific elements */
+input[type="text"], textarea, pre, code {
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  cursor: text;
+}
+
+/* Typography */
+h2 {
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #fff;
+  margin-bottom: 20px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+h3 {
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #999;
+  margin: 20px 0 10px;
+}
+
+h4 {
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #999;
+  margin-bottom: 12px;
+}
+
+label {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 6px;
+  font-weight: 400;
+  color: #ccc;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+/*!**********************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./lots-app/src/styles/layout.css ***!
+  \**********************************************************************************/
+.container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+}
+
+/* Sidebar with glass effect */
+.sidebar {
+  width: 280px;
+  background-color: rgba(20, 20, 20, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 24px 20px 20px;
+  height: 100%;
+  overflow-y: auto;
+  flex-shrink: 0;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 10;
+}
+
+.brand {
+  margin-bottom: 24px;
+  font-size: 14px;
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #fff;
+  opacity: 0.9;
+}
+
+/* Main content - shifted down for window controls */
+.main-content {
+  flex-grow: 1;
+  padding: 25px 0 0 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #111;
+  position: relative;
+}
+
+/* Mac-style window controls - moved to right corner */
+.window-controls {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  z-index: 1000;
+}
+
+/* Controls sections */
+.controls-section {
+  width: 100%;
+}
+
+/* Image preview */
+.preview-container {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: #0a0a0a;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+
+.image-preview {
+  flex-grow: 1;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.image-preview img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.placeholder-box {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  font-size: 14px;
+  text-align: center;
+}
+
+.upload-button-container {
+  position: absolute;
+  top: 35px;
+  right: 20px;
+  z-index: 100;
+}
+
+.preset-buttons {
+  position: absolute;
+  top: 35px;
+  left: 20px;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 8px;
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 4px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Mode toggle in sidebar */
+.mode-toggle-wrapper {
+  margin: 16px 0;
+  text-align: center;
+}
+
+.mode-toggle-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(20, 20, 20, 0.7);
+  border: 1px solid rgba(80, 80, 80, 0.4);
+  border-radius: 16px;
+  padding: 4px 8px;
+}
+
+.mode-basic-label,
+.mode-advanced-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: #999;
+  margin: 0 8px;
+  letter-spacing: 0.5px;
+}
+
+/* Modal layout */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.modal-content {
+  background-color: #1a1a1a;
+  margin: 10% auto;
+  padding: 0;
+  width: 80%;
+  max-width: 800px;
+  border-radius: 6px;
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.6);
+  position: relative;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background-color: #222;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.save-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+/*!**************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./lots-app/src/styles/components.css ***!
+  \**************************************************************************************/
+/* Form elements */
+input[type="text"], select {
+  width: 100%;
+  background-color: rgba(30, 30, 30, 0.7);
+  border: 1px solid rgba(100, 100, 100, 0.3);
+  padding: 8px 12px;
+  color: #fff;
+  border-radius: 3px;
+  margin-bottom: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+}
+
+input[type="text"]:focus, select:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+input[type="range"] {
+  width: 100%;
+  margin-bottom: 12px;
+  background-color: transparent;
+  -webkit-appearance: none;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 2px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 1px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  background: #fff;
+  margin-top: -5px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  background: #ddd;
+  transform: scale(1.1);
+}
+
+.parameter-value {
+  display: inline-block;
+  font-size: 12px;
+  color: #fff;
+  width: 40px;
+  text-align: right;
+  float: right;
+}
+
+/* Buttons */
+button {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+button.primary {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #111;
+  font-weight: 500;
+}
+
+button.primary:hover {
+  background-color: #fff;
+}
+
+.preset-btn {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-right: 6px;
+  margin-bottom: 0;
+  padding: 6px 12px;
+  font-size: 11px;
+  color: #ccc;
+}
+
+.preset-btn.active {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #111;
+  border-color: rgba(255, 255, 255, 0.9);
+}
+
+/* Window control buttons */
+.window-btn {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.window-btn:hover {
+  filter: brightness(0.8);
+}
+
+.close-btn {
+  background-color: #FF5F56;
+}
+
+.minimize-btn {
+  background-color: #FFBD2E;
+}
+
+.maximize-btn {
+  background-color: #27C93F;
+}
+
+/* Optional: Add the "x", "-", and "+" icons on hover */
+.close-btn:hover::before,
+.close-btn:hover::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.5);
+  top: 5.5px;
+  left: 3px;
+}
+
+.close-btn:hover::before {
+  transform: rotate(45deg);
+}
+
+.close-btn:hover::after {
+  transform: rotate(-45deg);
+}
+
+.minimize-btn:hover::before {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.5);
+  top: 5.5px;
+  left: 3px;
+}
+
+.maximize-btn:hover::before,
+.maximize-btn:hover::after {
+  content: '';
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.maximize-btn:hover::before {
+  width: 6px;
+  height: 1px;
+  top: 5.5px;
+  left: 3px;
+}
+
+.maximize-btn:hover::after {
+  width: 1px;
+  height: 6px;
+  top: 3px;
+  left: 5.5px;
+}
+
+/* Mode toggle switch */
+.mode-switch {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 18px;
+}
+
+.mode-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.mode-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #333;
+  transition: .3s;
+  border-radius: 10px;
+}
+
+.mode-slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+}
+
+.mode-switch input:checked + .mode-slider:before {
+  transform: translateX(18px);
+}
+
+/* Modal components */
+.modal-header h3 {
+  margin: 0;
+  color: #fff;
+}
+
+.close-modal {
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 24px;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+}
+
+.close-modal:hover {
+  color: #fff;
+}
+
+/* LUT preview */
+.lut-preview {
+  height: 400px;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #888;
+  font-family: monospace;
+  font-size: 12px;
+  padding: 20px;
+  margin: 0;
+  border: none;
+}
+
+/* Section toggles for Lumetri */
+.lumetri-section h3 {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.lumetri-section h3:after {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid #999;
+  border-bottom: 2px solid #999;
+  margin-left: 5px;
+  transform: rotate(45deg);
+  transition: transform 0.3s;
+}
+
+.lumetri-section h3.expanded:after {
+  transform: rotate(-135deg);
+  margin-top: 5px;
+}
+
+/* Section content */
+.section-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.section-content.expanded {
+  max-height: 1000px;
+}
+/*!*********************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./lots-app/src/styles/tools.css ***!
+  \*********************************************************************************/
+/* Color wheels containers */
+.color-wheels-container {
+  display: flex;
+  justify-content: space-between;
+  margin: 15px 0;
+}
+
+.color-wheel-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.wheel-label {
+  font-size: 10px;
+  color: #aaa;
+  margin-bottom: 5px;
+}
+
+/* Updated color wheel styling */
+.color-wheel {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.wheel-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: white;
+  border: 1px solid black;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Temperature value display styling */
+.kelvin-value {
+  font-size: 10px;
+  color: #777;
+  margin-left: 5px;
+}
+
+/* Curves editor styling */
+.curves-container {
+  margin: 15px 0;
+}
+
+.curve-channel-selector {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.curve-channel-btn {
+  background-color: rgba(30, 30, 30, 0.7);
+  color: #999;
+  border: 1px solid rgba(80, 80, 80, 0.3);
+  padding: 5px 10px;
+  font-size: 10px;
+  margin-right: 5px;
+  flex: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.curve-channel-btn.active {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #111;
+}
+
+.curve-editor {
+  position: relative;
+  width: 240px;
+  height: 240px;
+  margin: 0 auto;
+  background-color: rgba(20, 20, 20, 0.7);
+  border: 1px solid rgba(80, 80, 80, 0.4);
+}
+
+#curve-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+
+.curve-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.grid-line {
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.grid-line.horizontal {
+  width: 100%;
+  height: 1px;
+}
+
+.grid-line.vertical {
+  height: 100%;
+  width: 1px;
+}
+
+.curve-label {
+  position: absolute;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.curve-label.shadows {
+  bottom: 5px;
+  left: 5px;
+}
+
+.curve-label.midtones {
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.curve-label.highlights {
+  bottom: 5px;
+  right: 5px;
+}
+
+.curve-point {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: white;
+  border: 1px solid black;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: move;
+  z-index: 20;
+}
+
+.curve-point.active {
+  background-color: #00a0ff;
+}
+/*!**********************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./lots-app/src/styles/themes.css ***!
+  \**********************************************************************************/
+/* Theme colors and variables */
+:root {
+  --bg-primary: #111111;
+  --bg-secondary: #1a1a1a;
+  --bg-tertiary: rgba(20, 20, 20, 0.8);
+  
+  --text-primary: #f5f5f5;
+  --text-secondary: #ccc;
+  --text-muted: #999;
+  
+  --border-light: rgba(255, 255, 255, 0.1);
+  --border-medium: rgba(255, 255, 255, 0.2);
+  
+  --accent-primary: #00a0ff;
+  --accent-secondary: #27C93F;
+  
+  --control-bg: rgba(30, 30, 30, 0.7);
+  --control-border: rgba(100, 100, 100, 0.3);
+  
+  --overlay-dark: rgba(0, 0, 0, 0.6);
+  --overlay-light: rgba(255, 255, 255, 0.1);
+}
+
+/* You can add alternative themes here in the future */
+/*!**************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./lots-app/src/styles/animations.css ***!
+  \**************************************************************************************/
+/* Transitions and animations */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Transition for expandable sections */
+.section-content {
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+/* Hover effects */
+button, .preset-btn, .mode-slider, input[type="range"]::-webkit-slider-thumb {
+  transition: all 0.2s ease;
+}
+
+/* Slider movement animation */
+.comparison-slider, .vertical-divider, .original-image-container {
+  transition: left 0.1s ease-out;
+}
+
+/* Mode toggle animation */
+.mode-slider:before {
+  transition: transform 0.3s ease;
+}
+
+/*# sourceMappingURL=main.css.map*/

@@ -1,0 +1,157 @@
+/* Color wheels containers */
+.color-wheels-container {
+  display: flex;
+  justify-content: space-between;
+  margin: 15px 0;
+}
+
+.color-wheel-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.wheel-label {
+  font-size: 10px;
+  color: #aaa;
+  margin-bottom: 5px;
+}
+
+/* Updated color wheel styling */
+.color-wheel {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.wheel-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: white;
+  border: 1px solid black;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Temperature value display styling */
+.kelvin-value {
+  font-size: 10px;
+  color: #777;
+  margin-left: 5px;
+}
+
+/* Curves editor styling */
+.curves-container {
+  margin: 15px 0;
+}
+
+.curve-channel-selector {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.curve-channel-btn {
+  background-color: rgba(30, 30, 30, 0.7);
+  color: #999;
+  border: 1px solid rgba(80, 80, 80, 0.3);
+  padding: 5px 10px;
+  font-size: 10px;
+  margin-right: 5px;
+  flex: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.curve-channel-btn.active {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #111;
+}
+
+.curve-editor {
+  position: relative;
+  width: 240px;
+  height: 240px;
+  margin: 0 auto;
+  background-color: rgba(20, 20, 20, 0.7);
+  border: 1px solid rgba(80, 80, 80, 0.4);
+}
+
+#curve-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+
+.curve-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.grid-line {
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.grid-line.horizontal {
+  width: 100%;
+  height: 1px;
+}
+
+.grid-line.vertical {
+  height: 100%;
+  width: 1px;
+}
+
+.curve-label {
+  position: absolute;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.curve-label.shadows {
+  bottom: 5px;
+  left: 5px;
+}
+
+.curve-label.midtones {
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.curve-label.highlights {
+  bottom: 5px;
+  right: 5px;
+}
+
+.curve-point {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: white;
+  border: 1px solid black;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: move;
+  z-index: 20;
+}
+
+.curve-point.active {
+  background-color: #00a0ff;
+}

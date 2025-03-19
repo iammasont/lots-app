@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   mode: 'development',
@@ -24,7 +25,10 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader']
+        use: [
+          MiniCssExtractPlugin.loader, 
+          'css-loader'
+        ]
       }
     ],
   },
@@ -33,8 +37,9 @@ module.exports = {
       template: path.resolve(__dirname, 'lots-app/src/index.html'),
       filename: 'index.html',
     }),
-    // You can keep CopyPlugin if you want the CSS files available separately,
-    // but it's not necessary with style-loader and css-loader
+    new MiniCssExtractPlugin({
+      filename: 'styles/[name].css',
+    }),
     new CopyPlugin({
       patterns: [
         { 

@@ -1,5 +1,5 @@
 // Import styles
-import './styles/comparison.css';
+import './styles/compare.css';
 import './styles/base.css';
 import './styles/layout.css';
 import './styles/components.css';
