@@ -4,7 +4,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   mode: process.env.NODE_ENV || 'development',
-  entry: './lots-app/src/app.js',
+  entry: './src/app.js',  // Assuming src is inside the lots-app dir where webpack runs
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'public')
@@ -44,7 +44,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './lots-app/public/index.html',
+      template: path.resolve(__dirname, 'public/index.html'),
       filename: 'index.html'
     }),
     new MiniCssExtractPlugin({
