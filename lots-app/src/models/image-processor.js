@@ -137,7 +137,7 @@ function applyLumetriAdjustments(imageData) {
     
     // Apply exposure (exponential)
     if (lumetri.exposure !== 0) {
-      const exposureFactor = Math.pow(2, lumetri.exposure / 2); // Adjust scaling
+      const exposureFactor = Math.pow(2, lumetri.exposure / 150); // Adjust scaling for new range
       r *= exposureFactor;
       g *= exposureFactor;
       b *= exposureFactor;
@@ -145,7 +145,7 @@ function applyLumetriAdjustments(imageData) {
     
     // Apply contrast
     if (lumetri.contrast !== 0) {
-      const contrastFactor = 1 + (lumetri.contrast / 100); // Scale from -100..100 to appropriate range
+      const contrastFactor = 1 + (lumetri.contrast / 150); // Scale from -150..150 to appropriate range
       const midpoint = 0.5;
       r = midpoint + (r - midpoint) * contrastFactor;
       g = midpoint + (g - midpoint) * contrastFactor;
@@ -158,7 +158,7 @@ function applyLumetriAdjustments(imageData) {
     // Apply highlights adjustments
     if (lumetri.highlights !== 0) {
       const highlightInfluence = Math.pow(luminance, 2); // Affects brighter areas more
-      const adjustment = (lumetri.highlights / 100) * 0.5; // Scale appropriately
+      const adjustment = (lumetri.highlights / 150) * 0.5; // Scale appropriately for new range
       r += adjustment * highlightInfluence;
       g += adjustment * highlightInfluence;
       b += adjustment * highlightInfluence;
@@ -167,7 +167,7 @@ function applyLumetriAdjustments(imageData) {
     // Apply shadows adjustments
     if (lumetri.shadows !== 0) {
       const shadowInfluence = Math.pow(1 - luminance, 2); // Affects darker areas more
-      const adjustment = (lumetri.shadows / 100) * 0.5; // Scale appropriately
+      const adjustment = (lumetri.shadows / 150) * 0.5; // Scale appropriately for new range
       r += adjustment * shadowInfluence;
       g += adjustment * shadowInfluence;
       b += adjustment * shadowInfluence;
@@ -176,7 +176,7 @@ function applyLumetriAdjustments(imageData) {
     // Apply whites/blacks adjustments
     if (lumetri.whites !== 0) {
       const whitesInfluence = Math.pow(luminance, 4); // Affects only the brightest areas
-      const adjustment = (lumetri.whites / 100) * 0.5;
+      const adjustment = (lumetri.whites / 150) * 0.5; // Scale for new range
       r += adjustment * whitesInfluence;
       g += adjustment * whitesInfluence;
       b += adjustment * whitesInfluence;
@@ -184,7 +184,7 @@ function applyLumetriAdjustments(imageData) {
     
     if (lumetri.blacks !== 0) {
       const blacksInfluence = Math.pow(1 - luminance, 4); // Affects only the darkest areas
-      const adjustment = (lumetri.blacks / 100) * 0.5;
+      const adjustment = (lumetri.blacks / 150) * 0.5; // Scale for new range
       r += adjustment * blacksInfluence;
       g += adjustment * blacksInfluence;
       b += adjustment * blacksInfluence;
@@ -193,7 +193,7 @@ function applyLumetriAdjustments(imageData) {
     // Apply temperature and tint
     if (lumetri.temperature !== 0 || lumetri.tint !== 0) {
       // Temperature: blue-yellow shift
-      const temp = lumetri.temperature / 100; // Scale to -1..1
+      const temp = lumetri.temperature / 150; // Scale to -1..1 for new range
       if (temp < 0) {
         // Warmer (more yellow)
         r *= (1 - temp * 0.2);
@@ -207,7 +207,7 @@ function applyLumetriAdjustments(imageData) {
       }
       
       // Tint: green-magenta shift
-      const tintVal = lumetri.tint / 100; // Scale to -1..1
+      const tintVal = lumetri.tint / 150; // Scale to -1..1 for new range
       if (tintVal > 0) {
         // More magenta
         r *= (1 + tintVal * 0.1);

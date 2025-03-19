@@ -152,9 +152,9 @@ export function setupAdvancedControls() {
   createAdvancedSlider(basicCorrectionSection, {
     id: 'exposure-advanced',
     label: 'Exposure',
-    min: -5,
-    max: 5,
-    step: 0.1,
+    min: -150,
+    max: 150,
+    step: 1,
     initialValue: appState.currentLutParams.lumetri.exposure || 0,
     paramName: 'exposure'
   });
@@ -163,8 +163,8 @@ export function setupAdvancedControls() {
   createAdvancedSlider(basicCorrectionSection, {
     id: 'contrast-advanced',
     label: 'Contrast',
-    min: -100,
-    max: 100,
+    min: -150,
+    max: 150,
     step: 1,
     initialValue: appState.currentLutParams.lumetri.contrast || 0,
     paramName: 'contrast'
@@ -174,8 +174,8 @@ export function setupAdvancedControls() {
   createAdvancedSlider(basicCorrectionSection, {
     id: 'highlights-advanced',
     label: 'Highlights',
-    min: -100,
-    max: 100,
+    min: -150,
+    max: 150,
     step: 1,
     initialValue: appState.currentLutParams.lumetri.highlights || 0,
     paramName: 'highlights'
@@ -185,8 +185,8 @@ export function setupAdvancedControls() {
   createAdvancedSlider(basicCorrectionSection, {
     id: 'shadows-advanced',
     label: 'Shadows',
-    min: -100,
-    max: 100,
+    min: -150,
+    max: 150,
     step: 1,
     initialValue: appState.currentLutParams.lumetri.shadows || 0,
     paramName: 'shadows'
@@ -196,8 +196,8 @@ export function setupAdvancedControls() {
   createAdvancedSlider(basicCorrectionSection, {
     id: 'whites-advanced',
     label: 'Whites',
-    min: -100,
-    max: 100,
+    min: -150,
+    max: 150,
     step: 1,
     initialValue: appState.currentLutParams.lumetri.whites || 0,
     paramName: 'whites'
@@ -207,30 +207,31 @@ export function setupAdvancedControls() {
   createAdvancedSlider(basicCorrectionSection, {
     id: 'blacks-advanced',
     label: 'Blacks',
-    min: -100,
-    max: 100,
+    min: -150,
+    max: 150,
     step: 1,
     initialValue: appState.currentLutParams.lumetri.blacks || 0,
     paramName: 'blacks'
   });
   
-  // Create temperature control
+  // Create temperature control with Kelvin display
   createAdvancedSlider(basicCorrectionSection, {
     id: 'temperature-advanced',
     label: 'Temperature',
-    min: -100,
-    max: 100,
+    min: -150,
+    max: 150,
     step: 1,
     initialValue: appState.currentLutParams.lumetri.temperature || 0,
-    paramName: 'temperature'
+    paramName: 'temperature',
+    isTemperature: true
   });
   
   // Create tint control
   createAdvancedSlider(basicCorrectionSection, {
     id: 'tint-advanced',
     label: 'Tint',
-    min: -100,
-    max: 100,
+    min: -150,
+    max: 150,
     step: 1,
     initialValue: appState.currentLutParams.lumetri.tint || 0,
     paramName: 'tint'
@@ -270,6 +271,21 @@ function setupCurvesSection(container) {
   // ensure this section exists and is properly set up
 }
 
+// Helper function to convert temperature slider value to Kelvin
+function tempToKelvin(value) {
+  // Map slider value (-150 to +150) to Kelvin range (approx 2000K to 10000K)
+  // 0 on the slider = 6500K (neutral)
+  if (value === 0) return 6500;
+  
+  if (value < 0) {
+    // Negative values = warmer (lower Kelvin)
+    return Math.round(6500 + (value / 150) * 4500);
+  } else {
+    // Positive values = cooler (higher Kelvin)
+    return Math.round(6500 + (value / 150) * 3500);
+  }
+}
+
 // Helper function to create advanced slider controls
 function createAdvancedSlider(container, options) {
   if (!container) {
@@ -277,7 +293,7 @@ function createAdvancedSlider(container, options) {
     return;
   }
   
-  const { id, label, min, max, step, initialValue, paramName } = options;
+  const { id, label, min, max, step, initialValue, paramName, isTemperature } = options;
   console.log(`Creating advanced slider: ${id} for ${paramName}`);
   
   // Create container for the slider
@@ -293,7 +309,19 @@ function createAdvancedSlider(container, options) {
   const valueDisplay = document.createElement('span');
   valueDisplay.id = `${id}-value`;
   valueDisplay.className = 'parameter-value';
-  valueDisplay.textContent = initialValue.toFixed(1);
+  
+  // Set initial value display
+  if (isTemperature) {
+    // For temperature, show Kelvin
+    const kelvinValue = tempToKelvin(initialValue);
+    valueDisplay.textContent = `${kelvinValue}K`;
+    
+    // Add kelvin value class for styling if needed
+    valueDisplay.classList.add('kelvin-value');
+  } else {
+    // For other parameters, show regular value
+    valueDisplay.textContent = initialValue.toFixed(1);
+  }
   
   // Append value display to label
   labelElement.appendChild(valueDisplay);
@@ -323,7 +351,14 @@ function createAdvancedSlider(container, options) {
     appState.currentLutParams.lumetri[paramName] = parseFloat(slider.value);
     
     // Update display value
-    valueDisplay.textContent = parseFloat(slider.value).toFixed(1);
+    if (isTemperature) {
+      // For temperature, show Kelvin
+      const kelvinValue = tempToKelvin(parseFloat(slider.value));
+      valueDisplay.textContent = `${kelvinValue}K`;
+    } else {
+      // For other parameters, show regular value
+      valueDisplay.textContent = parseFloat(slider.value).toFixed(1);
+    }
     
     console.log(`Advanced parameter updated: ${paramName} = ${slider.value}`);
     
@@ -359,7 +394,11 @@ function resetAdvancedControls() {
     // Update value display
     const valueDisplay = document.getElementById(`${slider.id}-value`);
     if (valueDisplay) {
-      valueDisplay.textContent = '0.0';
+      if (paramName === 'temperature') {
+        valueDisplay.textContent = '6500K'; // Neutral temperature in Kelvin
+      } else {
+        valueDisplay.textContent = '0.0';
+      }
     }
   });
   

@@ -120,7 +120,7 @@ export function applyAdvancedLutAdjustments(r, g, b) {
   if (params.lumetri) {
     // Apply exposure
     if (params.lumetri.exposure !== 0) {
-      const exposureFactor = Math.pow(2, params.lumetri.exposure);
+      const exposureFactor = Math.pow(2, params.lumetri.exposure / 150);
       r *= exposureFactor;
       g *= exposureFactor;
       b *= exposureFactor;
@@ -128,7 +128,7 @@ export function applyAdvancedLutAdjustments(r, g, b) {
     
     // Apply contrast
     if (params.lumetri.contrast !== 0) {
-      const contrastValue = 1 + (params.lumetri.contrast / 150 * 1.5);
+      const contrastValue = 1 + (params.lumetri.contrast / 150);
       r = applyContrast(r, contrastValue);
       g = applyContrast(g, contrastValue);
       b = applyContrast(b, contrastValue);
@@ -139,10 +139,10 @@ export function applyAdvancedLutAdjustments(r, g, b) {
   if (params.lumetri) {
     const toneResult = applyToneAdjustments(
       r, g, b,
-      params.lumetri.highlights / 150 * 1.5,
-      params.lumetri.shadows / 150 * 1.5,
-      params.lumetri.whites / 150 * 1.5,
-      params.lumetri.blacks / 150 * 1.5
+      params.lumetri.highlights / 150,
+      params.lumetri.shadows / 150,
+      params.lumetri.whites / 150,
+      params.lumetri.blacks / 150
     );
     r = toneResult.r;
     g = toneResult.g;

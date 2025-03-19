@@ -387,64 +387,7 @@ addOverrideStyles();
 
 
 
-function addEmergencyToggles() {
-  // Create container for emergency buttons
-  const container = document.createElement('div');
-  container.style.position = 'fixed';
-  container.style.bottom = '10px';
-  container.style.right = '10px';
-  container.style.zIndex = '9999';
-  container.style.background = 'rgba(0,0,0,0.7)';
-  container.style.padding = '5px';
-  container.style.borderRadius = '5px';
-  
-  // Add a toggle button for each section
-  const sections = [
-    { toggle: 'basic-correction-toggle', content: 'basic-correction-section', label: 'Basic' },
-    { toggle: 'creative-toggle', content: 'creative-section', label: 'Creative' },
-    { toggle: 'color-wheels-toggle', content: 'color-wheels-section', label: 'Color Wheels' },
-    { toggle: 'curves-toggle', content: 'curves-section', label: 'Curves' }
-  ];
-  
-  sections.forEach(section => {
-    const button = document.createElement('button');
-    button.textContent = `Toggle ${section.label}`;
-    button.style.margin = '5px';
-    button.style.padding = '5px 10px';
-    
-    button.addEventListener('click', () => {
-      const toggle = document.getElementById(section.toggle);
-      const content = document.getElementById(section.content);
-      
-      if (toggle && content) {
-        // Toggle classes
-        toggle.classList.toggle('expanded');
-        
-        // Directly toggle visibility
-        if (content.style.display === 'none' || content.style.maxHeight === '0px') {
-          content.style.display = 'block';
-          content.style.maxHeight = '1000px';
-          content.style.opacity = '1';
-          button.style.background = '#4CAF50';
-        } else {
-          content.style.maxHeight = '0px';
-          content.style.opacity = '0';
-          content.style.display = 'none';
-          button.style.background = '';
-        }
-        
-        console.log(`Emergency toggle for ${section.label}: ${toggle.classList.contains('expanded')}`);
-      } else {
-        console.error(`Emergency toggle failed - couldn't find elements for ${section.label}`);
-      }
-    });
-    
-    container.appendChild(button);
-  });
-  
-  document.body.appendChild(container);
-  console.log("Emergency toggle buttons added");
-}
+
 
 // Add these emergency buttons as a last resort
 setTimeout(addEmergencyToggles, 1000);

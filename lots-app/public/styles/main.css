@@ -67,7 +67,7 @@
     left: 50%; /* Default position */
     width: 2px;
     height: 100%;
-    z-index: 3;
+    z-index: 4;
     cursor: ew-resize;
   }
   
@@ -781,8 +781,9 @@ button.primary:hover {
 /* Temperature value display styling */
 .kelvin-value {
   font-size: 10px;
-  color: #777;
+  color: #fff;
   margin-left: 5px;
+  letter-spacing: 0.5px;
 }
 
 /* Curves editor styling */

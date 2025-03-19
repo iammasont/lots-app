@@ -45,8 +45,9 @@
 /* Temperature value display styling */
 .kelvin-value {
   font-size: 10px;
-  color: #777;
+  color: #fff;
   margin-left: 5px;
+  letter-spacing: 0.5px;
 }
 
 /* Curves editor styling */
