@@ -44,7 +44,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: 'public/index.html',
+      template: './lots-app/public/index.html',
       filename: 'index.html'
     }),
     new MiniCssExtractPlugin({

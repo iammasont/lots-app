@@ -1,3 +1,4 @@
+// services/file-service.js
 // Import app state
 import { appState } from '../app.js';
 import { showToast } from '../components/common/ui-elements.js';
@@ -179,3 +180,9 @@ function fallbackLutUpload() {
     input.click();
   });
 }
+
+// Export additional utility functions
+export {
+  fallbackFileUpload,
+  fallbackLutUpload
+};

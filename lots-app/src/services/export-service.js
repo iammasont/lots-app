@@ -1,8 +1,9 @@
+// services/export-service.js
 // Import app state and services
 import { appState } from '../app.js';
 import { saveLutFile } from './file-service.js';
 import { generateCubeLUT } from './lut-generator.js';
-import { showToast, showConfirmDialog } from '../components/common/ui-elements.js';
+import { showToast } from '../components/common/ui-elements.js';
 
 // Initialize the export service
 export function initExportService() {
@@ -166,4 +167,11 @@ export async function exportPreset() {
     console.error('Error exporting preset:', error);
     showToast('Failed to export preset', 'error');
     return null;
-  }};
+  }
+}
+
+// Export additional functions for use in other modules
+export {
+  formatFilename,
+  handleExportLut
+};

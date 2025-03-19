@@ -445,5 +445,6 @@ export function applyCurvesToImage(imageData) {
 // Export functions and constants
 export {
   isLinearCurve,
-  interpolateCurve
+  interpolateCurve,
+  defaultCurveParams
 };

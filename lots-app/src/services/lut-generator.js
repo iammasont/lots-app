@@ -285,8 +285,10 @@ function applyToneAdjustments(r, g, b, highlights, shadows, whites, blacks) {
   return { r, g, b };
 }
 
-// Export functions
+// Export helper functions for use in other modules
 export {
   applyBasicLutAdjustments,
-  applyAdvancedLutAdjustments
+  applyAdvancedLutAdjustments,
+  applyTemperatureAndTint,
+  applyToneAdjustments
 };

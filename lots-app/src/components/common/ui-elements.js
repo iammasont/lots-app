@@ -72,9 +72,9 @@ function updateLUTPreview(fullPreview = false) {
   let lutContent = "# LUT Preview will be generated here";
   
   // In the future, we'll call the actual LUT generator:
-  // if (window.generateCubeLUT) {
-  //   lutContent = window.generateCubeLUT();
-  // }
+  if (window.generateCubeLUT) {
+    lutContent = window.generateCubeLUT();
+  }
   
   if (fullPreview) {
     // Show the full LUT content in the modal
@@ -235,7 +235,7 @@ export function showConfirmDialog(message, onConfirm, onCancel) {
   return dialogOverlay;
 }
 
-// Export utility functions - fixed to remove duplicate exports
+// Export utility functions
 export {
   updateLUTPreview
 };

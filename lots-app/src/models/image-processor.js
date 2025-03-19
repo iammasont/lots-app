@@ -1,3 +1,4 @@
+// models/image-processor.js
 // Import necessary functions from other modules
 import { appState } from '../app.js';
 import { applyBasicCorrections } from '../components/basic-corrections/basic-corrections.js';
@@ -69,16 +70,13 @@ export function processImageAdvanced(originalImage) {
     
     // Apply adjustments in sequence
     
-    // 1. Apply basic Lumetri adjustments (temperature, exposure, etc.)
-    // This would be implemented in a separate module
-    
-    // 2. Apply color wheels adjustments
+    // 1. Apply color wheels adjustments
     applyColorWheelAdjustments(imageData);
     
-    // 3. Apply creative effects (faded film, vibrance)
+    // 2. Apply creative effects (faded film, vibrance)
     applyCreativeEffects(imageData);
     
-    // 4. Apply curves adjustments
+    // 3. Apply curves adjustments
     if (appState.curvesPanel) {
       applyCurvesToImage(imageData);
     }

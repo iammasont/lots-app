@@ -2,7 +2,7 @@
 import './styles/base.css';
 import './styles/layout.css';
 import './styles/components.css';
-import './styles/comparison.css';
+import './styles/comparison.css';  // This was the missing import
 import './styles/tools.css';
 import './styles/themes.css';
 import './styles/animations.css';
@@ -21,6 +21,9 @@ import { initUiElements } from './components/common/ui-elements.js';
 import { initFileService } from './services/file-service.js';
 import { initLutGenerator } from './services/lut-generator.js';
 import { initExportService } from './services/export-service.js';
+
+// Import image processing utilities
+import { processImage, applyAdjustmentsToImage } from './models/image-processor.js';
 
 // App state
 let appState = {
@@ -132,37 +135,34 @@ function setupWindowControls() {
 
 // Apply adjustments to image based on current mode and parameters
 function applyImageAdjustments() {
-  // This function will be called by other modules
-  // It coordinates the image processing pipeline
-  
   if (!appState.originalImage) return;
   
   console.log('Applying image adjustments');
   
-  // Delegate to the appropriate processor based on mode
-  if (appState.activeMode === 'basic') {
-    applyBasicAdjustments();
-  } else {
-    applyAdvancedAdjustments();
+  // Actually process the image instead of just logging
+  try {
+    // Use the image processor to apply adjustments
+    const processedImageUrl = processImage(appState.originalImageElement);
+    
+    // Update the processed image with the new data
+    if (processedImageUrl && appState.processedImageElement) {
+      appState.processedImageElement.src = processedImageUrl;
+    }
+  } catch (error) {
+    console.error('Error processing image:', error);
   }
 }
 
 // Apply basic mode adjustments
 function applyBasicAdjustments() {
-  // This will be implemented with imported functions from image-processor.js
   console.log('Applying basic adjustments to image');
-  
-  // Will use the basic parameters from appState.currentLutParams
-  // The actual implementation will be moved to the appropriate module
+  applyAdjustmentsToImage();
 }
 
 // Apply advanced mode adjustments
 function applyAdvancedAdjustments() {
-  // This will be implemented with imported functions 
   console.log('Applying advanced Lumetri-style adjustments to image');
-  
-  // Will use the advanced parameters from appState.currentLutParams
-  // The actual implementation will be moved to the appropriate module
+  applyAdjustmentsToImage();
 }
 
 // Make certain functions available globally
