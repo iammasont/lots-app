@@ -21,6 +21,10 @@ module.exports = {
             presets: ['@babel/preset-env']
           }
         }
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader']
       }
     ],
   },
@@ -29,6 +33,8 @@ module.exports = {
       template: path.resolve(__dirname, 'lots-app/src/index.html'),
       filename: 'index.html',
     }),
+    // You can keep CopyPlugin if you want the CSS files available separately,
+    // but it's not necessary with style-loader and css-loader
     new CopyPlugin({
       patterns: [
         { 
