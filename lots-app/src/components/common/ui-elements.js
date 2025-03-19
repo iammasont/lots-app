@@ -96,10 +96,7 @@ export function updateLUTPreview(fullPreview = false) {
   }
 }
 
-
-
-
-// Initialize expandable sections
+// Initialize expandable sections - FIXED VERSION
 function initExpandableSections() {
   console.log('Initializing expandable sections');
   
@@ -131,39 +128,48 @@ function initExpandableSections() {
     if (section.expanded) {
       toggle.classList.add('expanded');
       content.classList.add('expanded');
-      content.style.maxHeight = '1000px';
+      content.style.display = 'block';
+      content.style.maxHeight = 'none'; // Allow full height initially
     } else {
       toggle.classList.remove('expanded');
       content.classList.remove('expanded');
-      content.style.maxHeight = '0px';
+      content.style.display = 'none';
+      content.style.maxHeight = '0';
     }
     
     // Add click event listener
     toggle.addEventListener('click', () => {
       console.log(`Toggle clicked for: ${section.toggle}`);
       
-      // Check if already expanded by looking directly at the content's current state
-      const isCurrentlyExpanded = content.style.maxHeight !== '0px';
+      // Toggle expanded state
+      const isExpanding = !toggle.classList.contains('expanded');
       
-      if (isCurrentlyExpanded) {
-        // Currently expanded, collapse it
-        toggle.classList.remove('expanded');
-        content.classList.remove('expanded');
-        content.style.maxHeight = '0px';
-        console.log(`Collapsing section: ${section.content}`);
-      } else {
-        // Currently collapsed, expand it
-        toggle.classList.add('expanded');
-        content.classList.add('expanded');
-        content.style.maxHeight = '1000px';
+      // Update toggle class
+      toggle.classList.toggle('expanded');
+      
+      // Update content
+      if (isExpanding) {
+        // Expanding
+        content.style.display = 'block';
+        // Use setTimeout to allow display change to take effect first
+        setTimeout(() => {
+          content.classList.add('expanded');
+          content.style.maxHeight = 'none';
+        }, 10);
         console.log(`Expanding section: ${section.content}`);
+      } else {
+        // Collapsing
+        content.classList.remove('expanded');
+        content.style.maxHeight = '0';
+        // Use setTimeout to allow transition to complete before hiding
+        setTimeout(() => {
+          content.style.display = 'none';
+        }, 300); // Match the transition duration in CSS
+        console.log(`Collapsing section: ${section.content}`);
       }
     });
   });
 }
-
-
-
 
 // Initialize window control buttons for Electron
 function initWindowControls() {

@@ -78,17 +78,74 @@ function setupBasicControls() {
 export function setupAdvancedControls() {
   console.log('Setting up advanced mode controls...');
   
-  const basicCorrectionSection = document.getElementById('basic-correction-section');
-  if (!basicCorrectionSection) {
-    console.error('Basic correction section element not found in DOM!');
+  // Get references to the advanced controls container
+  const advancedControls = document.getElementById('advanced-controls');
+  
+  if (!advancedControls) {
+    console.error('Advanced controls container not found!');
     return;
   }
   
-  console.log('Clearing existing content in basic correction section');
-  // Clear any existing content
+  // Check if the lumetri section already exists
+  let lumetriSection = advancedControls.querySelector('.lumetri-section');
+  
+  // If not, create it from scratch
+  if (!lumetriSection) {
+    lumetriSection = document.createElement('div');
+    lumetriSection.className = 'lumetri-section';
+    advancedControls.appendChild(lumetriSection);
+  }
+  
+  // Check for the toggle and section elements
+  let basicCorrectionToggle = document.getElementById('basic-correction-toggle');
+  let basicCorrectionSection = document.getElementById('basic-correction-section');
+  
+  // If they don't exist, create them
+  if (!basicCorrectionToggle) {
+    basicCorrectionToggle = document.createElement('h3');
+    basicCorrectionToggle.id = 'basic-correction-toggle';
+    basicCorrectionToggle.className = 'expanded';
+    basicCorrectionToggle.textContent = 'Basic Correction';
+    lumetriSection.appendChild(basicCorrectionToggle);
+  }
+  
+  if (!basicCorrectionSection) {
+    basicCorrectionSection = document.createElement('div');
+    basicCorrectionSection.id = 'basic-correction-section';
+    basicCorrectionSection.className = 'section-content expanded';
+    lumetriSection.appendChild(basicCorrectionSection);
+  }
+  
+  // Clear any existing content in the section
   basicCorrectionSection.innerHTML = '';
   
-  // Create advanced basic correction controls
+  // Ensure the section is visible and expanded
+  basicCorrectionToggle.classList.add('expanded');
+  basicCorrectionSection.classList.add('expanded');
+  basicCorrectionSection.style.display = 'block';
+  basicCorrectionSection.style.maxHeight = '1000px';
+  
+  // Set up toggle click handler explicitly
+  basicCorrectionToggle.onclick = function() {
+    console.log('Basic correction toggle clicked');
+    this.classList.toggle('expanded');
+    
+    if (this.classList.contains('expanded')) {
+      basicCorrectionSection.classList.add('expanded');
+      basicCorrectionSection.style.display = 'block';
+      setTimeout(() => {
+        basicCorrectionSection.style.maxHeight = '1000px';
+      }, 10);
+    } else {
+      basicCorrectionSection.classList.remove('expanded');
+      basicCorrectionSection.style.maxHeight = '0';
+      setTimeout(() => {
+        basicCorrectionSection.style.display = 'none';
+      }, 300);
+    }
+  };
+  
+  // Create sliders inside the section
   console.log('Creating advanced sliders...');
   
   // Create exposure control
@@ -187,7 +244,30 @@ export function setupAdvancedControls() {
   resetButton.addEventListener('click', resetAdvancedControls);
   basicCorrectionSection.appendChild(resetButton);
   
+  // Create other sections if needed
+  setupCreativeSection(advancedControls);
+  setupColorWheelsSection(advancedControls);
+  setupCurvesSection(advancedControls);
+  
   console.log('Advanced controls setup complete');
+}
+
+// Helper function to set up Creative section
+function setupCreativeSection(container) {
+  // This is just a placeholder - in a real implementation, you would
+  // ensure this section exists and is properly set up
+}
+
+// Helper function to set up Color Wheels section
+function setupColorWheelsSection(container) {
+  // This is just a placeholder - in a real implementation, you would
+  // ensure this section exists and is properly set up
+}
+
+// Helper function to set up Curves section
+function setupCurvesSection(container) {
+  // This is just a placeholder - in a real implementation, you would
+  // ensure this section exists and is properly set up
 }
 
 // Helper function to create advanced slider controls

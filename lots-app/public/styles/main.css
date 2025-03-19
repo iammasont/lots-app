@@ -694,6 +694,9 @@ button.primary:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin: 10px 0;
+  padding: 8px 0;
+  position: relative;
 }
 
 .lumetri-section h3:after {
@@ -713,15 +716,23 @@ button.primary:hover {
   margin-top: 5px;
 }
 
-/* Section content */
+/* Add this to components.css */
+.advanced-sliders-container {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+/* Make sure the section content can expand properly */
 .section-content {
-  max-height: 0;
   overflow: hidden;
-  transition: max-height 0.3s ease;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  max-height: 0;
+  opacity: 0.7;
 }
 
 .section-content.expanded {
-  max-height: 1000px;
+  max-height: 1000px; /* Use a large value instead of 'none' for animation */
+  opacity: 1;
 }
 /* Color wheels containers */
 .color-wheels-container {

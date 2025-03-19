@@ -50,7 +50,8 @@ function setupSlider(slider, valueDisplay, paramName) {
   });
 }
 
-// Set up section toggle for expandable sections
+// In other component files, like creative-effects.js, curves-panel.js, etc.
+// Replace this:
 function setupSectionToggle(toggleId, sectionId) {
   const toggle = document.getElementById(toggleId);
   const section = document.getElementById(sectionId);
@@ -59,9 +60,11 @@ function setupSectionToggle(toggleId, sectionId) {
     toggle.addEventListener('click', () => {
       toggle.classList.toggle('expanded');
       section.classList.toggle('expanded');
+      // No direct style manipulation here
     });
   }
 }
+
 
 // Apply creative effects to image data
 export function applyCreativeEffects(imageData) {
