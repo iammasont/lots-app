@@ -239,15 +239,43 @@ export function showConfirmDialog(message, onConfirm, onCancel) {
 
 
 
-export function initUiElements() {
-  console.log('🚨 INITIALIZING UI ELEMENTS - ARE WE HERE? 🚨');
-  
-  // Initialize modal functionality
-  initModals();
-  
-  // Initialize expandable sections
-  initExpandableSections();
-  
-  // Initialize window control buttons
-  initWindowControls();
+// Diagnostic Logging Mechanism
+window.DEBUG_LOGS = [];
+
+function log(message) {
+  console.log(message);
+  window.DEBUG_LOGS.push(message);
 }
+
+function debugInitExpandableSections() {
+  log('🔍 INIT EXPANDABLE SECTIONS - STARTING');
+  
+  const sections = [
+    { toggle: 'basic-correction-toggle', content: 'basic-correction-section', expanded: true },
+    { toggle: 'creative-toggle', content: 'creative-section', expanded: false },
+    { toggle: 'color-wheels-toggle', content: 'color-wheels-section', expanded: false },
+    { toggle: 'curves-toggle', content: 'curves-section', expanded: false }
+  ];
+  
+  sections.forEach(section => {
+    const toggle = document.getElementById(section.toggle);
+    const content = document.getElementById(section.content);
+    
+    log(`Checking ${section.toggle}: ${!!toggle}`);
+    log(`Checking ${section.content}: ${!!content}`);
+    
+    if (toggle && content) {
+      toggle.addEventListener('click', () => {
+        log(`Clicked: ${section.toggle}`);
+        toggle.classList.toggle('expanded');
+        content.classList.toggle('expanded');
+      });
+    }
+  });
+}
+
+// Expose debug logs globally for inspection
+window.getDebugLogs = () => window.DEBUG_LOGS;
+
+// Optional: Trigger debug initialization
+window.debugInitExpandableSections = debugInitExpandableSections;
