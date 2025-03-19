@@ -1,0 +1,23 @@
+{
+  "name": "lots-app",
+  "version": "1.0.0",
+  "description": "LUT Creation Tool",
+  "main": "./lots-app/electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "webpack --mode development --watch",
+    "build": "webpack --mode production",
+    "electron-dev": "concurrently \"npm run dev\" \"electron .\""
+  },
+  "dependencies": {
+    "electron": "^22.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0",
+    "css-loader": "^6.7.3",
+    "html-webpack-plugin": "^5.6.3",
+    "style-loader": "^3.3.1",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
+  }
+}

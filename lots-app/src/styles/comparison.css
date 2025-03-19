@@ -1,0 +1,148 @@
+/* Custom image comparison component with correct masking */
+.comparison-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .comparison-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  
+  /* The processed image is the base layer covering the entire container */
+  .processed-image-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+  
+  /* The original image is positioned on top, but clipped */
+  .original-image-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    /* Clip only shows left side of the original image */
+    clip-path: inset(0 50% 0 0);
+    border-right: none; /* Remove the right border since we have a divider now */
+  }
+  
+  /* Both images fill their containers */
+  .processed-image-container img,
+  .original-image-container img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  
+  /* Vertical divider line */
+  .vertical-divider {
+    position: absolute;
+    top: 0;
+    left: 50%; /* Default position */
+    width: 2px;
+    height: 100%;
+    background-color: white;
+    z-index: 3;
+    pointer-events: none; /* So it doesn't interfere with slider interaction */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Add shadow for better visibility */
+  }
+  
+  /* The slider controls the dividing line position */
+  .comparison-slider {
+    position: absolute;
+    top: 0;
+    left: 50%; /* Default position */
+    width: 2px;
+    height: 100%;
+    z-index: 3;
+    cursor: ew-resize;
+  }
+  
+  .slider-handle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    background-color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    cursor: ew-resize;
+    z-index: 5; /* Increased z-index to appear above the divider */
+  }
+  
+  .slider-handle::after {
+    content: '↔';
+    font-size: 16px;
+    color: #111;
+  }
+  
+  .image-label {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 600;
+    pointer-events: none;
+    top: 15px;
+    z-index: 5;
+  }
+  
+  .before-label {
+    left: 15px;
+  }
+  
+  .after-label {
+    right: 15px;
+  }
+  
+  /* Toggle view controls */
+  .toggle-view {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 20px;
+    padding: 4px;
+    display: flex;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+  }
+  
+  .toggle-view button {
+    background: transparent;
+    border: none;
+    color: #999;
+    font-size: 11px;
+    margin: 0;
+    padding: 4px 12px;
+    border-radius: 16px;
+  }
+  
+  .toggle-view button.active {
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #111;
+  }

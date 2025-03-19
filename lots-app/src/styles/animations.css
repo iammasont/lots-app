@@ -1,0 +1,38 @@
+/* Transitions and animations */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Transition for expandable sections */
+.section-content {
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+/* Hover effects */
+button, .preset-btn, .mode-slider, input[type="range"]::-webkit-slider-thumb {
+  transition: all 0.2s ease;
+}
+
+/* Slider movement animation */
+.comparison-slider, .vertical-divider, .original-image-container {
+  transition: left 0.1s ease-out;
+}
+
+/* Mode toggle animation */
+.mode-slider:before {
+  transition: transform 0.3s ease;
+}
