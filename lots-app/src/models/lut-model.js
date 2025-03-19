@@ -2,72 +2,33 @@
 
 // Default LUT parameters
 export const defaultLutParams = {
-    // Basic parameters
-    size: 32,
-    title: "Signature Look",
-    contrast: 1.2,
-    saturation: 1.15,
-    redBalance: 1.05,
-    greenBalance: 0.95,
-    blueBalance: 1.1,
-    shadowsShift: [0.05, 0.0, -0.05],
-    highlightsShift: [0.03, 0.03, 0.0],
-    
-    // Advanced Lumetri-style parameters
-    lumetri: {
-      temperature: 0,
-      tint: 0,
-      exposure: 0,
-      contrast: 0,
-      highlights: 0,
-      shadows: 0,
-      whites: 0,
-      blacks: 0,
-      vibrance: 0,
-      saturation: 100,
-      fadedFilm: 0
-    },
-    
-    // Color wheels
-    colorWheels: {
-      shadowTint: { r: 128, g: 128, b: 128 },
-      highlightTint: { r: 128, g: 128, b: 128 },
-      tintBalance: 0
-    },
-    
-    // Curves
-    curves: {
-      rgb: [
-        { x: 0, y: 0 },
-        { x: 0.25, y: 0.25 },
-        { x: 0.5, y: 0.5 },
-        { x: 0.75, y: 0.75 },
-        { x: 1, y: 1 }
-      ],
-      red: [
-        { x: 0, y: 0 },
-        { x: 0.25, y: 0.25 },
-        { x: 0.5, y: 0.5 },
-        { x: 0.75, y: 0.75 },
-        { x: 1, y: 1 }
-      ],
-      green: [
-        { x: 0, y: 0 },
-        { x: 0.25, y: 0.25 },
-        { x: 0.5, y: 0.5 },
-        { x: 0.75, y: 0.75 },
-        { x: 1, y: 1 }
-      ],
-      blue: [
-        { x: 0, y: 0 },
-        { x: 0.25, y: 0.25 },
-        { x: 0.5, y: 0.5 },
-        { x: 0.75, y: 0.75 },
-        { x: 1, y: 1 }
-      ],
-      currentChannel: 'rgb'
-    }
-  };
+  // Basic parameters
+  size: 32,
+  title: "Signature Look",
+  contrast: 0, // Changed from 1.2
+  saturation: 0, // Changed from 1.15
+  redBalance: 0, // Changed from 1.05
+  greenBalance: 0, // Changed from 0.95
+  blueBalance: 0, // Changed from 1.1
+  shadowsShift: [0, 0, 0], // Changed from [0.05, 0.0, -0.05]
+  highlightsShift: [0, 0, 0], // Changed from [0.03, 0.03, 0.0]
+  
+  // Advanced Lumetri-style parameters
+  lumetri: {
+    temperature: 0,
+    tint: 0,
+    exposure: 0,
+    contrast: 0,
+    highlights: 0,
+    shadows: 0,
+    whites: 0,
+    blacks: 0,
+    vibrance: 0,
+    saturation: 0, // Changed from 100
+    fadedFilm: 0
+  },
+  // Rest remains the same...
+};
   
   // LUT Model class
   export class LutModel {

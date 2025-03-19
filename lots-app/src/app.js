@@ -34,15 +34,15 @@ let appState = {
     // Basic parameters
     size: 32,
     title: "Signature Look",
-    contrast: 1.2,
-    saturation: 1.15,
-    redBalance: 1.05,
-    greenBalance: 0.95,
-    blueBalance: 1.1,
-    shadowsShift: [0.05, 0.0, -0.05],
-    highlightsShift: [0.03, 0.03, 0.0],
+    contrast: 0, // Changed from 1.2
+    saturation: 0, // Changed from 1.15
+    redBalance: 0, // Changed from 1.05
+    greenBalance: 0, // Changed from 0.95
+    blueBalance: 0, // Changed from 1.1
+    shadowsShift: [0, 0, 0], // Changed from [0.05, 0.0, -0.05]
+    highlightsShift: [0, 0, 0], // Changed from [0.03, 0.03, 0.0]
     
-    // Advanced parameters will be added by the respective modules
+    // Advanced parameters
     lumetri: {
       exposure: 0,
       contrast: 0,
@@ -55,7 +55,6 @@ let appState = {
     }
   }
 };
-
 // Initialize the application
 function initApp() {
   console.log('LOTS App initializing...');

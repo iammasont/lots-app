@@ -71,7 +71,124 @@ function setupBasicControls() {
   setupSlider(greenBalanceSlider, greenBalanceValue, 'greenBalance');
   setupSlider(blueBalanceSlider, blueBalanceValue, 'blueBalance');
   
+  // Set up reset button
+  setupResetButton();
+  
   console.log('Basic controls setup complete');
+}
+
+// Set up reset button functionality
+function setupResetButton() {
+  const resetBtn = document.getElementById('reset-basic-btn');
+  
+  if (resetBtn) {
+    resetBtn.addEventListener('click', resetBasicControls);
+  } else {
+    console.warn('Reset button not found in HTML');
+  }
+}
+
+// Reset basic controls to one/neutral values
+function resetBasicControls() {
+  console.log('Resetting basic controls to neutral values (1.0)');
+  
+  // Reset all basic parameters to 1.0 (neutral)
+  appState.currentLutParams.basic = {
+    contrast: 1.0,
+    saturation: 1.0,
+    redBalance: 1.0,
+    greenBalance: 1.0,
+    blueBalance: 1.0,
+    shadowsShift: [0, 0, 0],
+    highlightsShift: [0, 0, 0]
+  };
+  
+  // Update all slider controls to match reset values
+  const sliders = {
+    'contrast': document.getElementById('contrast'),
+    'saturation': document.getElementById('saturation'),
+    'red-balance': document.getElementById('red-balance'),
+    'green-balance': document.getElementById('green-balance'),
+    'blue-balance': document.getElementById('blue-balance')
+  };
+  
+  const values = {
+    'contrast': document.getElementById('contrast-value'),
+    'saturation': document.getElementById('saturation-value'),
+    'red-balance': document.getElementById('red-balance-value'),
+    'green-balance': document.getElementById('green-balance-value'),
+    'blue-balance': document.getElementById('blue-balance-value')
+  };
+  
+  // Update each slider and its displayed value
+  for (const key in sliders) {
+    if (sliders[key]) {
+      sliders[key].value = 1.0;
+    }
+    if (values[key]) {
+      values[key].textContent = '1.00';
+    }
+  }
+  
+  // Apply changes
+  applyImageAdjustments();
+}
+
+// Set up a slider control with its value display for basic mode
+function setupSlider(slider, valueDisplay, paramName) {
+  if (!slider || !valueDisplay) {
+    console.warn(`Cannot set up slider: ${paramName} - missing elements`);
+    return;
+  }
+  
+  // Set initial value from app state
+  slider.value = appState.currentLutParams.basic[paramName];
+  valueDisplay.textContent = appState.currentLutParams.basic[paramName].toFixed(2);
+  
+  // Add event listener
+  slider.addEventListener('input', () => {
+    // Update parameter in app state
+    appState.currentLutParams.basic[paramName] = parseFloat(slider.value);
+    
+    // Update display value
+    valueDisplay.textContent = appState.currentLutParams.basic[paramName].toFixed(2);
+    
+    console.log(`Basic parameter updated: ${paramName} = ${slider.value}`);
+    
+    // Apply adjustments to image
+    applyImageAdjustments();
+  });
+}
+
+// Initialize title and LUT size controls
+function initTitleAndSizeControls() {
+  console.log('Initializing title and LUT size controls');
+  
+  const titleInput = document.getElementById('title');
+  const lutSizeSelect = document.getElementById('lut-size');
+  
+  if (!titleInput) console.warn('Title input not found');
+  if (!lutSizeSelect) console.warn('LUT size select not found');
+  
+  if (titleInput) {
+    // Set initial value
+    titleInput.value = appState.currentLutParams.title || "Signature Look";
+    
+    // Add event listener
+    titleInput.addEventListener('input', () => {
+      appState.currentLutParams.title = titleInput.value;
+    });
+  }
+  
+  if (lutSizeSelect) {
+    // Set initial value
+    lutSizeSelect.value = appState.currentLutParams.size || "32";
+    
+    // Add event listener
+    lutSizeSelect.addEventListener('change', () => {
+      appState.currentLutParams.size = parseInt(lutSizeSelect.value);
+    });
+  }
 }
 
 // Set up advanced mode controls
@@ -404,63 +521,6 @@ function resetAdvancedControls() {
   
   // Apply changes
   applyImageAdjustments();
-}
-
-// Set up a slider control with its value display for basic mode
-function setupSlider(slider, valueDisplay, paramName) {
-  if (!slider || !valueDisplay) {
-    console.warn(`Cannot set up slider: ${paramName} - missing elements`);
-    return;
-  }
-  
-  // Set initial value from app state
-  slider.value = appState.currentLutParams.basic[paramName];
-  valueDisplay.textContent = appState.currentLutParams.basic[paramName].toFixed(2);
-  
-  // Add event listener
-  slider.addEventListener('input', () => {
-    // Update parameter in app state
-    appState.currentLutParams.basic[paramName] = parseFloat(slider.value);
-    
-    // Update display value
-    valueDisplay.textContent = appState.currentLutParams.basic[paramName].toFixed(2);
-    
-    console.log(`Basic parameter updated: ${paramName} = ${slider.value}`);
-    
-    // Apply adjustments to image
-    applyImageAdjustments();
-  });
-}
-
-// Initialize title and LUT size controls
-function initTitleAndSizeControls() {
-  console.log('Initializing title and LUT size controls');
-  
-  const titleInput = document.getElementById('title');
-  const lutSizeSelect = document.getElementById('lut-size');
-  
-  if (!titleInput) console.warn('Title input not found');
-  if (!lutSizeSelect) console.warn('LUT size select not found');
-  
-  if (titleInput) {
-    // Set initial value
-    titleInput.value = appState.currentLutParams.title || "Signature Look";
-    
-    // Add event listener
-    titleInput.addEventListener('input', () => {
-      appState.currentLutParams.title = titleInput.value;
-    });
-  }
-  
-  if (lutSizeSelect) {
-    // Set initial value
-    lutSizeSelect.value = appState.currentLutParams.size || "32";
-    
-    // Add event listener
-    lutSizeSelect.addEventListener('change', () => {
-      appState.currentLutParams.size = parseInt(lutSizeSelect.value);
-    });
-  }
 }
 
 // Apply the basic corrections to an image

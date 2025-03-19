@@ -397,3 +397,21 @@ button.primary:hover {
 input:checked + .mode-slider:before {
   transform: translateX(22px);
 }
+
+/* Reset button styling */
+.reset-btn {
+  background-color: rgba(80, 80, 80, 0.3);
+  color: #ccc;
+  border: 1px solid rgba(100, 100, 100, 0.3);
+  padding: 6px 12px;
+  font-size: 11px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  width: auto;
+  display: inline-block;
+}
+
+.reset-btn:hover {
+  background-color: rgba(100, 100, 100, 0.5);
+  color: #fff;
+}
