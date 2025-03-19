@@ -257,7 +257,7 @@ label {
   background-color: rgba(20, 20, 20, 0.8);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  padding: 24px 20px 20px;
+  padding: 35px 20px 20px;
   height: 100%;
   overflow-y: auto;
   flex-shrink: 0;
@@ -279,7 +279,7 @@ label {
 /* Main content - shifted down for window controls */
 .main-content {
   flex-grow: 1;
-  padding: 25px 0 0 0;
+  padding: 40px 0 0 0;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -290,8 +290,8 @@ label {
 /* Mac-style window controls - moved to right corner */
 .window-controls {
   position: fixed;
-  top: 12px;
-  right: 12px;
+  top: 15px;
+  right: 15px;
   display: flex;
   gap: 8px;
   z-index: 1000;
@@ -366,17 +366,19 @@ label {
 /* Mode toggle in sidebar */
 .mode-toggle-wrapper {
   margin: 16px 0;
-  text-align: center;
+  text-align: left;
 }
 
 .mode-toggle-container {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   background-color: rgba(20, 20, 20, 0.7);
   border: 1px solid rgba(80, 80, 80, 0.4);
   border-radius: 16px;
   padding: 4px 8px;
+  margin-left: 0;
+  width: 100%;
 }
 
 .mode-basic-label,
@@ -497,8 +499,8 @@ button {
   cursor: pointer;
   transition: all 0.2s;
   letter-spacing: 0.5px;
-  margin-right: 8px;
-  margin-bottom: 8px;
+  margin-right: 10px;
+  margin-bottom: 12px;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -734,6 +736,21 @@ button.primary:hover {
   max-height: 1000px; /* Use a large value instead of 'none' for animation */
   opacity: 1;
 }
+
+.curve-editor {
+  margin-bottom: 15px; /* Add space below curve editor */
+}
+
+#reset-curve-btn {
+  margin-top: 10px;  /* Add space above reset button */
+  margin-bottom: 20px; /* Add more space below reset button */
+}
+
+/* Export buttons spacing */
+#view-code-btn, #save-lut-btn,
+#view-code-btn-advanced, #save-lut-btn-advanced {
+  margin-top: 20px; /* Add more space above export buttons */
+}
 /* Color wheels containers */
 .color-wheels-container {
   display: flex;
@@ -781,9 +798,8 @@ button.primary:hover {
 /* Temperature value display styling */
 .kelvin-value {
   font-size: 10px;
-  color: #fff;
+  color: #777;
   margin-left: 5px;
-  letter-spacing: 0.5px;
 }
 
 /* Curves editor styling */

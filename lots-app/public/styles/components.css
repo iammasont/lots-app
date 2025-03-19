@@ -67,8 +67,8 @@ button {
   cursor: pointer;
   transition: all 0.2s;
   letter-spacing: 0.5px;
-  margin-right: 8px;
-  margin-bottom: 8px;
+  margin-right: 10px;
+  margin-bottom: 12px;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -303,4 +303,19 @@ button.primary:hover {
 .section-content.expanded {
   max-height: 1000px; /* Use a large value instead of 'none' for animation */
   opacity: 1;
+}
+
+.curve-editor {
+  margin-bottom: 15px; /* Add space below curve editor */
+}
+
+#reset-curve-btn {
+  margin-top: 10px;  /* Add space above reset button */
+  margin-bottom: 20px; /* Add more space below reset button */
+}
+
+/* Export buttons spacing */
+#view-code-btn, #save-lut-btn,
+#view-code-btn-advanced, #save-lut-btn-advanced {
+  margin-top: 20px; /* Add more space above export buttons */
 }
