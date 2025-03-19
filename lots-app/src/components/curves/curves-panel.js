@@ -2,34 +2,22 @@
 // Import app state and functions
 import { appState, applyImageAdjustments } from '../../app.js';
 
-// Default curve parameters
+// Default curve parameters - only two points for a straight line
 export const defaultCurveParams = {
   rgb: [
     { x: 0, y: 0 },      // Shadow point
-    { x: 0.25, y: 0.25 }, // Quarter tone
-    { x: 0.5, y: 0.5 },   // Midtone
-    { x: 0.75, y: 0.75 }, // Three-quarter tone
     { x: 1, y: 1 }       // Highlight point
   ],
   red: [
     { x: 0, y: 0 },
-    { x: 0.25, y: 0.25 },
-    { x: 0.5, y: 0.5 },
-    { x: 0.75, y: 0.75 },
     { x: 1, y: 1 }
   ],
   green: [
     { x: 0, y: 0 },
-    { x: 0.25, y: 0.25 },
-    { x: 0.5, y: 0.5 },
-    { x: 0.75, y: 0.75 },
     { x: 1, y: 1 }
   ],
   blue: [
     { x: 0, y: 0 },
-    { x: 0.25, y: 0.25 },
-    { x: 0.5, y: 0.5 },
-    { x: 0.75, y: 0.75 },
     { x: 1, y: 1 }
   ],
   currentChannel: 'rgb'
@@ -58,11 +46,15 @@ export function interpolateCurve(points, value) {
     i++;
   }
   
-  // Linear interpolation between points
+  // Get the segment points
   const p1 = points[i];
   const p2 = points[i + 1];
-  const t = (value - p1.x) / (p2.x - p1.x);
   
+  // Calculate the t parameter (0-1) within this segment
+  const segmentLength = p2.x - p1.x;
+  const t = segmentLength === 0 ? 0 : (value - p1.x) / segmentLength;
+  
+  // Simple linear interpolation for direct curve segments
   return p1.y + t * (p2.y - p1.y);
 }
 
@@ -80,6 +72,19 @@ class CurvesPanel {
     this.curveCtx = null;
     this.channelButtons = {};
     this.activePoint = null;
+    this.pointRadius = 5;
+    this.gridColor = 'rgba(100, 100, 100, 0.3)';
+    this.baseLineColor = 'rgba(100, 100, 100, 0.5)';
+    this.curveColors = {
+      rgb: 'rgba(255, 255, 255, 0.9)',
+      red: 'rgba(255, 100, 100, 0.9)',
+      green: 'rgba(100, 255, 100, 0.9)',
+      blue: 'rgba(100, 100, 255, 0.9)'
+    };
+    
+    // Keyboard state
+    this.shiftPressed = false;
+    this.altPressed = false;
     
     // Bind methods to maintain correct context
     this.init = this.init.bind(this);
@@ -87,7 +92,12 @@ class CurvesPanel {
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.handleMouseMove = this.handleMouseMove.bind(this);
     this.handleMouseUp = this.handleMouseUp.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.handleKeyUp = this.handleKeyUp.bind(this);
     this.resetCurve = this.resetCurve.bind(this);
+    this.findNearestPoint = this.findNearestPoint.bind(this);
+    this.addPoint = this.addPoint.bind(this);
+    this.removePoint = this.removePoint.bind(this);
   }
   
   // Initialize the curves panel UI
@@ -122,57 +132,69 @@ class CurvesPanel {
     this.drawCurve();
   }
   
-      // Set up all event listeners
-setupEvents() {
-  // Ensure methods are bound
-  if (!this.curveCanvas) return;
-  
-  // Canvas event handling
-  this.curveCanvas.addEventListener('mousedown', this.handleMouseDown);
-  document.addEventListener('mousemove', this.handleMouseMove);
-  document.addEventListener('mouseup', this.handleMouseUp);
-  
-  // Add right-click context menu prevention
-  this.curveCanvas.addEventListener('contextmenu', (e) => {
-    e.preventDefault();
-  });
-  
-  // Add double-click for adding points
-  this.curveCanvas.addEventListener('dblclick', (e) => {
-    const rect = this.curveCanvas.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;
-    const y = 1 - (e.clientY - rect.top) / rect.height;
+  // Set up all event listeners
+  setupEvents() {
+    // Ensure methods are bound
+    if (!this.curveCanvas) return;
     
-    // Find closest segment to add point to
-    const points = this.params[this.params.currentChannel];
+    // Canvas event handling
+    this.curveCanvas.addEventListener('mousedown', this.handleMouseDown);
+    document.addEventListener('mousemove', this.handleMouseMove);
+    document.addEventListener('mouseup', this.handleMouseUp);
     
-    // Maximum number of points to prevent overcrowding
-    if (points.length < 10) {
-      this.addPoint(x, y);
+    // Keyboard event listeners for Shift and Alt keys
+    document.addEventListener('keydown', this.handleKeyDown);
+    document.addEventListener('keyup', this.handleKeyUp);
+    
+    // Channel selector buttons
+    for (const channel in this.channelButtons) {
+      const btn = this.channelButtons[channel];
+      if (btn) {
+        btn.addEventListener('click', () => {
+          // Set active channel
+          this.params.currentChannel = channel;
+          
+          // Update UI
+          this.updateChannelButtonUI();
+          this.drawCurve();
+        });
+      }
     }
-  });
-  
-  // Channel selector buttons
-  for (const channel in this.channelButtons) {
-    const btn = this.channelButtons[channel];
-    if (btn) {
-      btn.addEventListener('click', () => {
-        // Set active channel
-        this.params.currentChannel = channel;
-        
-        // Update UI
-        this.updateChannelButtonUI();
-        this.drawCurve();
-      });
+    
+    // Reset button
+    const resetCurveBtn = document.getElementById('reset-curve-btn');
+    if (resetCurveBtn) {
+      resetCurveBtn.addEventListener('click', this.resetCurve);
     }
   }
   
-  // Reset button
-  const resetCurveBtn = document.getElementById('reset-curve-btn');
-  if (resetCurveBtn) {
-    resetCurveBtn.addEventListener('click', this.resetCurve);
+  // Handle key down events
+  handleKeyDown(e) {
+    // Track Shift key (for adding points)
+    if (e.key === 'Shift') {
+      this.shiftPressed = true;
+      this.curveCanvas.style.cursor = 'crosshair';
+    }
+    
+    // Track Alt/Option key (for removing points)
+    if (e.key === 'Alt' || e.key === 'Option') {
+      this.altPressed = true;
+      this.curveCanvas.style.cursor = 'not-allowed';
+    }
   }
-}
+  
+  // Handle key up events
+  handleKeyUp(e) {
+    if (e.key === 'Shift') {
+      this.shiftPressed = false;
+      this.curveCanvas.style.cursor = 'default';
+    }
+    
+    if (e.key === 'Alt' || e.key === 'Option') {
+      this.altPressed = false;
+      this.curveCanvas.style.cursor = 'default';
+    }
+  }
   
   // Update channel button UI
   updateChannelButtonUI() {
@@ -205,195 +227,287 @@ setupEvents() {
     }
   }
   
-      // Draw the curve onto the canvas
-      drawCurve() {
-        if (!this.curveCanvas || !this.curveCtx) {
-          console.warn('Canvas not ready for drawing');
-          return;
-        }
-        
-        const width = this.curveCanvas.width;
-        const height = this.curveCanvas.height;
-        
-        // Clear canvas
-        this.curveCtx.clearRect(0, 0, width, height);
-        
-        // Get current channel curve points
-        const points = this.params[this.params.currentChannel];
-        
-        // Draw curve background
-        this.curveCtx.fillStyle = 'rgba(20, 20, 20, 0.3)';
-        this.curveCtx.fillRect(0, 0, width, height);
-        
-        // Set curve color based on channel
-        let curveColor;
-        switch (this.params.currentChannel) {
-          case 'red': curveColor = 'rgba(255, 100, 100, 0.8)'; break;
-          case 'green': curveColor = 'rgba(100, 255, 100, 0.8)'; break;
-          case 'blue': curveColor = 'rgba(100, 100, 255, 0.8)'; break;
-          default: curveColor = 'rgba(255, 255, 255, 0.8)';
-        }
-        
-        // Draw the bezier curve connecting all points
-        this.curveCtx.beginPath();
-        
-        // Move to first point
-        this.curveCtx.moveTo(points[0].x * width, (1 - points[0].y) * height);
-        
-        // Draw bezier curves between points
-        for (let i = 1; i < points.length; i++) {
-          const prevPoint = points[i-1];
-          const currPoint = points[i];
-          
-          // Calculate control points for smooth curve
-          const cp1x = prevPoint.x * width + (currPoint.x - prevPoint.x) * width * 0.4;
-          const cp1y = (1 - prevPoint.y) * height;
-          const cp2x = currPoint.x * width - (currPoint.x - prevPoint.x) * width * 0.4;
-          const cp2y = (1 - currPoint.y) * height;
-          
-          // Draw bezier segment
-          this.curveCtx.bezierCurveTo(
-            cp1x, cp1y,
-            cp2x, cp2y,
-            currPoint.x * width, (1 - currPoint.y) * height
-          );
-        }
-        
-        // Style and stroke the path
-        this.curveCtx.strokeStyle = curveColor;
-        this.curveCtx.lineWidth = 2;
-        this.curveCtx.stroke();
-        
-        // Draw control points
-        points.forEach((point, index) => {
-          this.curveCtx.beginPath();
-          this.curveCtx.arc(
-            point.x * width,
-            (1 - point.y) * height,
-            5,
-            0,
-            Math.PI * 2
-          );
-          
-          // Style based on whether it's an endpoint (fixed) or not
-          if (index === 0 || index === points.length - 1) {
-            this.curveCtx.fillStyle = 'rgba(150, 150, 150, 0.8)';
-          } else {
-            this.curveCtx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-          }
-          
-          this.curveCtx.fill();
-          this.curveCtx.strokeStyle = 'rgba(0, 0, 0, 0.8)';
-          this.curveCtx.lineWidth = 1;
-          this.curveCtx.stroke();
-        });
-        
-        // Draw "add point" indicators between existing points
-        if (points.length < 10) { // Limit max points
-          for (let i = 0; i < points.length - 1; i++) {
-            const midX = (points[i].x + points[i+1].x) / 2 * width;
-            const midY = (1 - (points[i].y + points[i+1].y) / 2) * height;
-            
-            this.curveCtx.beginPath();
-            this.curveCtx.arc(midX, midY, 3, 0, Math.PI * 2);
-            this.curveCtx.fillStyle = 'rgba(100, 100, 100, 0.5)';
-            this.curveCtx.fill();
-          }
-        }
-      }
+  // Draw the grid
+  drawGrid(width, height) {
+    this.curveCtx.strokeStyle = this.gridColor;
+    this.curveCtx.lineWidth = 1;
+    
+    // Draw vertical grid lines (5 lines including borders)
+    for (let i = 0; i <= 4; i++) {
+      const x = Math.round(width * (i / 4)) + 0.5; // Add 0.5 for sharp lines
+      this.curveCtx.beginPath();
+      this.curveCtx.moveTo(x, 0);
+      this.curveCtx.lineTo(x, height);
+      this.curveCtx.stroke();
+    }
+    
+    // Draw horizontal grid lines (5 lines including borders)
+    for (let i = 0; i <= 4; i++) {
+      const y = Math.round(height * (i / 4)) + 0.5; // Add 0.5 for sharp lines
+      this.curveCtx.beginPath();
+      this.curveCtx.moveTo(0, y);
+      this.curveCtx.lineTo(width, y);
+      this.curveCtx.stroke();
+    }
+    
+    // Draw the diagonal reference line
+    this.curveCtx.strokeStyle = this.baseLineColor;
+    this.curveCtx.beginPath();
+    this.curveCtx.moveTo(0, height);
+    this.curveCtx.lineTo(width, 0);
+    this.curveCtx.stroke();
+  }
   
-      // Handle mouse down on curve
-      handleMouseDown(e) {
-        if (!this.curveCanvas) return;
-        
-        const rect = this.curveCanvas.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / rect.width;
-        const y = 1 - (e.clientY - rect.top) / rect.height;
-        
-        // Get current channel points
-        const points = this.params[this.params.currentChannel];
-        
-        // Find closest control point
-        let minDistance = Infinity;
-        let closestPoint = null;
-        let pointIndex = -1;
-        
-        points.forEach((point, index) => {
-          const dx = point.x - x;
-          const dy = point.y - y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          
-          if (distance < minDistance) {
-            minDistance = distance;
-            closestPoint = point;
-            pointIndex = index;
-          }
-        });
-        
-        // Right click to remove a point
-        if (e.button === 2 && pointIndex > 0 && pointIndex < points.length - 1) {
-          e.preventDefault();
-          this.removePoint(pointIndex);
-          return;
-        }
-        
-        // If close enough to a point, make it active
-        if (minDistance < 0.05) {
-          // Don't allow moving first or last point horizontally
-          if (pointIndex > 0 && pointIndex < points.length - 1) {
-            this.activePoint = {
-              point: closestPoint,
-              index: pointIndex
-            };
-          } else {
-            // Endpoints can only move vertically
-            this.activePoint = {
-              point: closestPoint,
-              index: pointIndex,
-              verticalOnly: true
-            };
-          }
-        } else {
-          // Check if we should add a new point
-          // Find the closest curve segment
-          let closestSegmentIndex = -1;
-          let minSegmentDistance = Infinity;
-          
-          // Maximum number of points to prevent overcrowding
-          if (points.length < 10) {
-            for (let i = 0; i < points.length - 1; i++) {
-              const p1 = points[i];
-              const p2 = points[i+1];
-              
-              // Check if x is between the points
-              if (x >= p1.x && x <= p2.x) {
-                // Calculate distance to the line segment
-                const segmentX = (p1.x + p2.x) / 2;
-                const segmentY = (p1.y + p2.y) / 2;
-                const dx = segmentX - x;
-                const dy = segmentY - y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                
-                if (distance < minSegmentDistance) {
-                  minSegmentDistance = distance;
-                  closestSegmentIndex = i;
-                }
-              }
-            }
-            
-            // If we're close enough to a segment, add a new point
-            if (minSegmentDistance < 0.1) {
-              this.addPoint(x, y);
-            }
-          }
-        }
+  // Draw the curve onto the canvas
+  drawCurve() {
+    if (!this.curveCanvas || !this.curveCtx) {
+      console.warn('Canvas not ready for drawing');
+      return;
+    }
+    
+    const width = this.curveCanvas.width;
+    const height = this.curveCanvas.height;
+    
+    // Clear canvas
+    this.curveCtx.clearRect(0, 0, width, height);
+    
+    // Draw curve background
+    this.curveCtx.fillStyle = 'rgba(20, 20, 20, 0.4)';
+    this.curveCtx.fillRect(0, 0, width, height);
+    
+    // Draw grid
+    this.drawGrid(width, height);
+    
+    // Get current channel curve points
+    const points = this.params[this.params.currentChannel];
+    
+    // Set curve color based on channel
+    const curveColor = this.curveColors[this.params.currentChannel];
+    
+    // Sort points by X value to ensure proper curve rendering
+    const sortedPoints = [...points].sort((a, b) => a.x - b.x);
+    
+    // Draw the curve using direct line segments
+    this.drawDirectCurve(sortedPoints, width, height, curveColor);
+    
+    // Now draw the control points
+    this.drawControlPoints(sortedPoints, width, height);
+  }
+  
+  // Draw a direct curve with simple line segments
+  drawDirectCurve(points, width, height, curveColor) {
+    if (points.length < 2) return;
+    
+    // For rendering, we'll use a high resolution curve with many interpolated points
+    const resolution = 100; // Number of segments for smooth curve
+    const step = 1 / resolution;
+    
+    this.curveCtx.beginPath();
+    
+    // Start at the first point
+    this.curveCtx.moveTo(
+      points[0].x * width,
+      (1 - points[0].y) * height
+    );
+    
+    // For each segment between 0 and 1
+    for (let t = step; t <= 1; t += step) {
+      // Find the appropriate segment
+      let i = 0;
+      while (i < points.length - 1 && points[i + 1].x < t) {
+        i++;
       }
-
-
-
       
+      // Skip if we're already past the end
+      if (i >= points.length - 1) continue;
+      
+      const p1 = points[i];
+      const p2 = points[i + 1];
+      
+      // Skip if point is outside our current segment
+      if (t < p1.x || t > p2.x) continue;
+      
+      // Linear interpolation within this segment
+      const segmentT = (t - p1.x) / (p2.x - p1.x);
+      const y = p1.y + segmentT * (p2.y - p1.y);
+      
+      // Draw line to this point
+      this.curveCtx.lineTo(
+        t * width,
+        (1 - y) * height
+      );
+    }
+    
+    // Ensure we draw to the last point
+    this.curveCtx.lineTo(
+      points[points.length - 1].x * width,
+      (1 - points[points.length - 1].y) * height
+    );
+    
+    // Style and stroke the path
+    this.curveCtx.strokeStyle = curveColor;
+    this.curveCtx.lineWidth = 2;
+    this.curveCtx.stroke();
+  }
   
-  // Handle mouse move for curve editing
+  // Draw the control points
+  drawControlPoints(points, width, height) {
+    points.forEach((point, index) => {
+      const isEndpoint = (index === 0 || index === points.length - 1);
+      const x = point.x * width;
+      const y = (1 - point.y) * height;
+      
+      // Draw point
+      this.curveCtx.beginPath();
+      this.curveCtx.arc(x, y, this.pointRadius, 0, Math.PI * 2);
+      
+      // Style based on whether it's an endpoint (fixed) or not
+      if (isEndpoint) {
+        this.curveCtx.fillStyle = 'rgba(150, 150, 150, 0.9)';
+      } else if (this.activePoint && this.activePoint.point === point) {
+        this.curveCtx.fillStyle = 'rgba(255, 255, 255, 1.0)';
+      } else {
+        this.curveCtx.fillStyle = 'rgba(220, 220, 220, 0.9)';
+      }
+      
+      this.curveCtx.fill();
+      this.curveCtx.strokeStyle = 'rgba(0, 0, 0, 0.8)';
+      this.curveCtx.lineWidth = 1;
+      this.curveCtx.stroke();
+    });
+  }
+  
+  // Find the nearest control point to the given coordinates
+  findNearestPoint(x, y) {
+    const points = this.params[this.params.currentChannel];
+    let minDistance = Infinity;
+    let nearestPoint = null;
+    let pointIndex = -1;
+    
+    points.forEach((point, index) => {
+      const dx = point.x - x;
+      const dy = point.y - y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      
+      if (distance < minDistance) {
+        minDistance = distance;
+        nearestPoint = point;
+        pointIndex = index;
+      }
+    });
+    
+    return {
+      point: nearestPoint,
+      index: pointIndex,
+      distance: minDistance
+    };
+  }
+  
+  // Add a new point to the curve
+  addPoint(x, y) {
+    const points = this.params[this.params.currentChannel];
+    
+    // Find where to insert the new point (maintain x-ordering)
+    let insertIndex = points.length;
+    for (let i = 0; i < points.length; i++) {
+      if (x < points[i].x) {
+        insertIndex = i;
+        break;
+      }
+    }
+    
+    // Insert the new point
+    points.splice(insertIndex, 0, { x, y });
+    
+    // Redraw the curve
+    this.drawCurve();
+    
+    // Apply changes to image
+    if (typeof applyImageAdjustments === 'function') {
+      applyImageAdjustments();
+    }
+    
+    return insertIndex;
+  }
+  
+  // Remove a point from the curve
+  removePoint(index) {
+    const points = this.params[this.params.currentChannel];
+    
+    // Don't remove endpoint (first and last points)
+    if (index > 0 && index < points.length - 1) {
+      points.splice(index, 1);
+      
+      // Redraw the curve
+      this.drawCurve();
+      
+      // Apply changes to image
+      if (typeof applyImageAdjustments === 'function') {
+        applyImageAdjustments();
+      }
+    }
+  }
+  
+  // Handle mouse down on curve
+  handleMouseDown(e) {
+    if (!this.curveCanvas) return;
+    
+    const rect = this.curveCanvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = 1 - (e.clientY - rect.top) / rect.height;
+    
+    // Clamp values to 0-1 range
+    const clampedX = Math.max(0, Math.min(1, x));
+    const clampedY = Math.max(0, Math.min(1, y));
+    
+    // Find nearest point
+    const nearest = this.findNearestPoint(clampedX, clampedY);
+    
+    // Handle adding a point with Shift key
+    if (this.shiftPressed) {
+      // If not too close to existing point, add a new one
+      if (nearest.distance > 0.05) {
+        this.addPoint(clampedX, clampedY);
+      }
+      return;
+    }
+    
+    // Handle removing a point with Alt/Option key
+    if (this.altPressed) {
+      // If close to a point and not an endpoint, remove it
+      if (nearest.distance < 0.05 && nearest.index > 0 && nearest.index < this.params[this.params.currentChannel].length - 1) {
+        this.removePoint(nearest.index);
+      }
+      return;
+    }
+    
+    // If close enough to a point, select it
+    if (nearest.distance < 0.05) {
+      // Don't allow moving first or last point horizontally
+      if (nearest.index > 0 && nearest.index < this.params[this.params.currentChannel].length - 1) {
+        this.activePoint = {
+          point: nearest.point,
+          index: nearest.index,
+          startX: clampedX,
+          startY: clampedY
+        };
+      } else {
+        // Endpoints can only move vertically
+        this.activePoint = {
+          point: nearest.point,
+          index: nearest.index,
+          startX: clampedX,
+          startY: clampedY,
+          verticalOnly: true
+        };
+      }
+      
+      // Redraw to highlight the active point
+      this.drawCurve();
+    }
+  }
+  
+  // Handle mouse move
   handleMouseMove(e) {
     if (!this.activePoint || !this.curveCanvas) return;
     
@@ -408,30 +522,32 @@ setupEvents() {
     const points = this.params[this.params.currentChannel];
     const index = this.activePoint.index;
     
-    // Enforce x ordering and prevent moving end points
-    const prevX = points[index - 1].x;
-    const nextX = points[index + 1].x;
+    // If vertical only (endpoints), only update Y
+    if (this.activePoint.verticalOnly) {
+      points[index].y = y;
+    } else {
+      // For middle points, enforce x-ordering
+      const prevX = (index > 0) ? points[index - 1].x + 0.01 : 0;
+      const nextX = (index < points.length - 1) ? points[index + 1].x - 0.01 : 1;
+      
+      // Update point position
+      points[index].x = Math.max(prevX, Math.min(nextX, x));
+      points[index].y = y;
+    }
     
-    // Ensure point stays between its neighbors
-    x = Math.max(prevX + 0.01, Math.min(nextX - 0.01, x));
-    
-    // Update point
-    points[index].x = x;
-    points[index].y = y;
-    
-    // Redraw
+    // Redraw the curve
     this.drawCurve();
     
-    // Apply adjustments if function exists
+    // Apply changes to image
     if (typeof applyImageAdjustments === 'function') {
       applyImageAdjustments();
     }
   }
   
-  // Handle mouse up for curve editing
-  handleMouseUp() {
-    // Clear active point
+  // Handle mouse up
+  handleMouseUp(e) {
     this.activePoint = null;
+    this.drawCurve(); // Redraw to update highlighting
   }
   
   // Apply curves to RGB values
@@ -481,62 +597,6 @@ setupEvents() {
     
     return imageData;
   }
-
-// Set up all event listeners
-setupEvents() {
-  // Ensure methods are bound
-  if (!this.curveCanvas) return;
-  
-  // Canvas event handling
-  this.curveCanvas.addEventListener('mousedown', this.handleMouseDown);
-  document.addEventListener('mousemove', this.handleMouseMove);
-  document.addEventListener('mouseup', this.handleMouseUp);
-  
-  // Add right-click context menu prevention
-  this.curveCanvas.addEventListener('contextmenu', (e) => {
-    e.preventDefault();
-  });
-  
-  // Add double-click for adding points
-  this.curveCanvas.addEventListener('dblclick', (e) => {
-    const rect = this.curveCanvas.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;
-    const y = 1 - (e.clientY - rect.top) / rect.height;
-    
-    // Find closest segment to add point to
-    const points = this.params[this.params.currentChannel];
-    
-    // Maximum number of points to prevent overcrowding
-    if (points.length < 10) {
-      this.addPoint(x, y);
-    }
-  });
-  
-  // Channel selector buttons
-  for (const channel in this.channelButtons) {
-    const btn = this.channelButtons[channel];
-    if (btn) {
-      btn.addEventListener('click', () => {
-        // Set active channel
-        this.params.currentChannel = channel;
-        
-        // Update UI
-        this.updateChannelButtonUI();
-        this.drawCurve();
-      });
-    }
-  }
-  
-  // Reset button
-  const resetCurveBtn = document.getElementById('reset-curve-btn');
-  if (resetCurveBtn) {
-    resetCurveBtn.addEventListener('click', this.resetCurve);
-  }
-}
-
-
-
-
 }
 
 // Single instance for the app
@@ -577,6 +637,20 @@ function setupSectionToggle(toggleId, sectionId) {
     toggle.addEventListener('click', () => {
       toggle.classList.toggle('expanded');
       section.classList.toggle('expanded');
+      
+      if (section.classList.contains('expanded')) {
+        section.style.display = 'block';
+        section.style.maxHeight = '1000px'; 
+        section.style.opacity = '1';
+      } else {
+        section.style.maxHeight = '0';
+        section.style.opacity = '0';
+        setTimeout(() => {
+          if (!section.classList.contains('expanded')) {
+            section.style.display = 'none';
+          }
+        }, 300);
+      }
     });
   }
 }

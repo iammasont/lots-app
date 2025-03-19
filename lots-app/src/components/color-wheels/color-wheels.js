@@ -66,9 +66,12 @@ function setupColorWheel(wheel, paramName) {
   canvas.height = wheel.clientHeight || 80;
   wheel.appendChild(canvas);
   
-  // Use CSS-based color wheel instead of canvas
+  // Improved anti-aliased color wheel background with smooth gradient
   wheel.style.background = "conic-gradient(red, yellow, lime, cyan, blue, magenta, red)";
-  wheel.style.backgroundImage = "radial-gradient(circle at center, white 0%, rgba(255, 255, 255, 0) 70%), conic-gradient(red, yellow, lime, cyan, blue, magenta, red)";
+  wheel.style.backgroundImage = "radial-gradient(circle at center, white 0%, rgba(255, 255, 255, 0) 70%), conic-gradient(from 0deg, hsl(0, 100%, 50%), hsl(60, 100%, 50%), hsl(120, 100%, 50%), hsl(180, 100%, 50%), hsl(240, 100%, 50%), hsl(300, 100%, 50%), hsl(360, 100%, 50%))";
+  wheel.style.borderRadius = "50%";
+  wheel.style.boxShadow = "inset 0 0 0 1px rgba(255, 255, 255, 0.2)";
+  wheel.style.border = "none"; // Remove the default border causing aliasing
   
   // Add indicator for current position
   const indicator = document.createElement('div');
