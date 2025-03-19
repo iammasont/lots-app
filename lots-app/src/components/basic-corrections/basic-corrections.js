@@ -16,6 +16,32 @@ export function initBasicCorrections() {
     };
   }
   
+  // Initialize advanced parameters if not present
+  if (!appState.currentLutParams.lumetri) {
+    appState.currentLutParams.lumetri = {
+      exposure: 0,
+      contrast: 0,
+      highlights: 0,
+      shadows: 0,
+      whites: 0,
+      blacks: 0,
+      temperature: 0,
+      tint: 0
+    };
+  }
+  
+  // Set up basic mode controls
+  setupBasicControls();
+  
+  // Set up advanced mode controls
+  setupAdvancedControls();
+  
+  // Initialize LUT title and size controls
+  initTitleAndSizeControls();
+}
+
+// Set up basic mode slider controls
+function setupBasicControls() {
   // Get slider references
   const contrastSlider = document.getElementById('contrast');
   const saturationSlider = document.getElementById('saturation');
@@ -36,12 +62,204 @@ export function initBasicCorrections() {
   setupSlider(redBalanceSlider, redBalanceValue, 'redBalance');
   setupSlider(greenBalanceSlider, greenBalanceValue, 'greenBalance');
   setupSlider(blueBalanceSlider, blueBalanceValue, 'blueBalance');
-  
-  // Initialize LUT title and size controls
-  initTitleAndSizeControls();
 }
 
-// Set up a slider control with its value display
+// Set up advanced mode controls
+function setupAdvancedControls() {
+  const basicCorrectionSection = document.getElementById('basic-correction-section');
+  if (!basicCorrectionSection) return;
+  
+  // Clear any existing content
+  basicCorrectionSection.innerHTML = '';
+  
+  // Create advanced basic correction controls
+  
+  // Create exposure control
+  createAdvancedSlider(basicCorrectionSection, {
+    id: 'exposure-advanced',
+    label: 'Exposure',
+    min: -5,
+    max: 5,
+    step: 0.1,
+    initialValue: appState.currentLutParams.lumetri.exposure || 0,
+    paramName: 'exposure'
+  });
+  
+  // Create contrast control
+  createAdvancedSlider(basicCorrectionSection, {
+    id: 'contrast-advanced',
+    label: 'Contrast',
+    min: -100,
+    max: 100,
+    step: 1,
+    initialValue: appState.currentLutParams.lumetri.contrast || 0,
+    paramName: 'contrast'
+  });
+  
+  // Create highlights control
+  createAdvancedSlider(basicCorrectionSection, {
+    id: 'highlights-advanced',
+    label: 'Highlights',
+    min: -100,
+    max: 100,
+    step: 1,
+    initialValue: appState.currentLutParams.lumetri.highlights || 0,
+    paramName: 'highlights'
+  });
+  
+  // Create shadows control
+  createAdvancedSlider(basicCorrectionSection, {
+    id: 'shadows-advanced',
+    label: 'Shadows',
+    min: -100,
+    max: 100,
+    step: 1,
+    initialValue: appState.currentLutParams.lumetri.shadows || 0,
+    paramName: 'shadows'
+  });
+  
+  // Create whites control
+  createAdvancedSlider(basicCorrectionSection, {
+    id: 'whites-advanced',
+    label: 'Whites',
+    min: -100,
+    max: 100,
+    step: 1,
+    initialValue: appState.currentLutParams.lumetri.whites || 0,
+    paramName: 'whites'
+  });
+  
+  // Create blacks control
+  createAdvancedSlider(basicCorrectionSection, {
+    id: 'blacks-advanced',
+    label: 'Blacks',
+    min: -100,
+    max: 100,
+    step: 1,
+    initialValue: appState.currentLutParams.lumetri.blacks || 0,
+    paramName: 'blacks'
+  });
+  
+  // Create temperature control
+  createAdvancedSlider(basicCorrectionSection, {
+    id: 'temperature-advanced',
+    label: 'Temperature',
+    min: -100,
+    max: 100,
+    step: 1,
+    initialValue: appState.currentLutParams.lumetri.temperature || 0,
+    paramName: 'temperature'
+  });
+  
+  // Create tint control
+  createAdvancedSlider(basicCorrectionSection, {
+    id: 'tint-advanced',
+    label: 'Tint',
+    min: -100,
+    max: 100,
+    step: 1,
+    initialValue: appState.currentLutParams.lumetri.tint || 0,
+    paramName: 'tint'
+  });
+  
+  // Add reset button
+  const resetButton = document.createElement('button');
+  resetButton.textContent = 'Reset';
+  resetButton.className = 'reset-btn';
+  resetButton.addEventListener('click', resetAdvancedControls);
+  basicCorrectionSection.appendChild(resetButton);
+}
+
+// Helper function to create advanced slider controls
+function createAdvancedSlider(container, options) {
+  if (!container) return;
+  
+  const { id, label, min, max, step, initialValue, paramName } = options;
+  
+  // Create container for the slider
+  const sliderContainer = document.createElement('div');
+  sliderContainer.className = 'control-group';
+  
+  // Create label element
+  const labelElement = document.createElement('label');
+  labelElement.setAttribute('for', id);
+  labelElement.textContent = label + ' ';
+  
+  // Create value display
+  const valueDisplay = document.createElement('span');
+  valueDisplay.id = `${id}-value`;
+  valueDisplay.className = 'parameter-value';
+  valueDisplay.textContent = initialValue.toFixed(1);
+  
+  // Append value display to label
+  labelElement.appendChild(valueDisplay);
+  
+  // Create slider input
+  const slider = document.createElement('input');
+  slider.type = 'range';
+  slider.id = id;
+  slider.min = min;
+  slider.max = max;
+  slider.step = step;
+  slider.value = initialValue;
+  
+  // Add elements to container
+  sliderContainer.appendChild(labelElement);
+  sliderContainer.appendChild(slider);
+  container.appendChild(sliderContainer);
+  
+  // Set up event listener
+  slider.addEventListener('input', () => {
+    // Ensure lumetri object exists
+    if (!appState.currentLutParams.lumetri) {
+      appState.currentLutParams.lumetri = {};
+    }
+    
+    // Update parameter value
+    appState.currentLutParams.lumetri[paramName] = parseFloat(slider.value);
+    
+    // Update display value
+    valueDisplay.textContent = parseFloat(slider.value).toFixed(1);
+    
+    // Apply changes to image
+    applyImageAdjustments();
+  });
+  
+  return { slider, valueDisplay };
+}
+
+// Reset all advanced controls to their default values
+function resetAdvancedControls() {
+  // Reset all lumetri parameters to default values
+  appState.currentLutParams.lumetri = {
+    exposure: 0,
+    contrast: 0,
+    highlights: 0,
+    shadows: 0,
+    whites: 0,
+    blacks: 0,
+    temperature: 0,
+    tint: 0
+  };
+  
+  // Update all slider controls to match reset values
+  const sliders = document.querySelectorAll('#basic-correction-section input[type="range"]');
+  sliders.forEach(slider => {
+    const paramName = slider.id.split('-')[0]; // Extract parameter name from id
+    slider.value = appState.currentLutParams.lumetri[paramName] || 0;
+    
+    // Update value display
+    const valueDisplay = document.getElementById(`${slider.id}-value`);
+    if (valueDisplay) {
+      valueDisplay.textContent = '0.0';
+    }
+  });
+  
+  // Apply changes
+  applyImageAdjustments();
+}
+
+// Set up a slider control with its value display for basic mode
 function setupSlider(slider, valueDisplay, paramName) {
   if (!slider || !valueDisplay) return;
   
@@ -149,5 +367,5 @@ function applyContrast(value, contrast) {
 
 // Export functions and constants
 export {
-    applyContrast
+  applyContrast
 };

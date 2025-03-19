@@ -9,7 +9,7 @@ import './styles/animations.css';
 
 // Import components
 import { initCurvesPanel } from './components/curves/curves-panel.js';
-import { initBasicCorrections } from './components/basic-corrections/basic-corrections.js';
+import { initBasicCorrections, setupAdvancedControls } from './components/basic-corrections/basic-corrections.js';
 import { initCreativeEffects } from './components/creative/creative-effects.js';
 import { initColorWheels } from './components/color-wheels/color-wheels.js';
 import { initImageComparison } from './components/image-preview/image-comparison.js';
@@ -43,6 +43,16 @@ let appState = {
     highlightsShift: [0.03, 0.03, 0.0],
     
     // Advanced parameters will be added by the respective modules
+    lumetri: {
+      exposure: 0,
+      contrast: 0,
+      highlights: 0,
+      shadows: 0,
+      whites: 0,
+      blacks: 0,
+      temperature: 0,
+      tint: 0
+    }
   }
 };
 
@@ -92,6 +102,11 @@ function setupModeToggle() {
         console.log(`Switching to ${appState.activeMode} mode`);
         basicControls.style.display = isAdvancedMode ? 'none' : 'block';
         advancedControls.style.display = isAdvancedMode ? 'block' : 'none';
+        
+        // When switching to advanced mode, ensure all advanced sections are properly initialized
+        if (isAdvancedMode && typeof setupAdvancedControls === 'function') {
+          setupAdvancedControls();
+        }
         
         // Apply current image adjustments with the new mode
         if (appState.originalImage && appState.processedImage) {
@@ -178,6 +193,3 @@ export {
   applyBasicAdjustments,
   applyAdvancedAdjustments
 };
-
-
-
